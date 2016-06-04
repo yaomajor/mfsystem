@@ -15,6 +15,7 @@ public class Animais {
 	private double acimaDeTrintaSM = 0d;
 	private double acimaDeTrintaSF = 0d;
 	private int codCliente = 0;
+	private int seila;
 	//
 	public int getAnimaisId() {
 		return animaisId;
