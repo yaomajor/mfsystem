@@ -6,6 +6,9 @@ import javax.swing.JInternalFrame;
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+
+import br.com.util.JTextFieldFocu;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
@@ -19,9 +22,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class CadastroUsuario extends JInternalFrame {
-	private JTextField textField;
-	private JTextField textField_1;
-	private JPasswordField passwordField;
+	private JTextField textID;
+	private JTextField textLogin;
+	private JPasswordField textSenha;
 	private JTable table;
 
 	/**
@@ -45,6 +48,7 @@ public class CadastroUsuario extends JInternalFrame {
 	 */
 	public CadastroUsuario() {
 		setTitle("Cadastro de Usu\u00E1rio");
+		
 		setFrameIcon(new ImageIcon(CadastroUsuario.class.getResource("/image/icUsuarioPeq.png")));
 		getContentPane().setBackground(Color.WHITE);
 		getContentPane().setLayout(null);
@@ -55,10 +59,10 @@ public class CadastroUsuario extends JInternalFrame {
 		lblId.setBounds(10, 11, 87, 21);
 		getContentPane().add(lblId);
 		
-		textField = new JTextField();
-		textField.setBounds(103, 11, 86, 20);
-		getContentPane().add(textField);
-		textField.setColumns(10);
+		textID = new JTextFieldFocu();
+		textID.setBounds(103, 11, 86, 20);
+		getContentPane().add(textID);
+		textID.setColumns(10);
 		
 		JLabel lblUsurio = new JLabel("Usu\u00E1rio:");
 		lblUsurio.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -66,10 +70,10 @@ public class CadastroUsuario extends JInternalFrame {
 		lblUsurio.setBounds(10, 34, 87, 21);
 		getContentPane().add(lblUsurio);
 		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
-		textField_1.setBounds(103, 34, 223, 20);
-		getContentPane().add(textField_1);
+		textLogin = new JTextFieldFocu();
+		textLogin.setColumns(10);
+		textLogin.setBounds(103, 34, 223, 20);
+		getContentPane().add(textLogin);
 		
 		JLabel lblSenha = new JLabel("Senha:");
 		lblSenha.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -77,9 +81,9 @@ public class CadastroUsuario extends JInternalFrame {
 		lblSenha.setBounds(10, 57, 87, 21);
 		getContentPane().add(lblSenha);
 		
-		passwordField = new JPasswordField();
-		passwordField.setBounds(103, 57, 87, 21);
-		getContentPane().add(passwordField);
+		textSenha = new JPasswordField();
+		textSenha.setBounds(103, 57, 87, 21);
+		getContentPane().add(textSenha);
 		
 		JLabel lblPermiteMudarEra = new JLabel("Permite Mudar Era:");
 		lblPermiteMudarEra.setHorizontalAlignment(SwingConstants.TRAILING);

@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.DefaultComboBoxModel;
 
 public class Estoque extends JInternalFrame {
 	private JTextField textDataDe;
@@ -40,6 +41,7 @@ public class Estoque extends JInternalFrame {
 			}
 		});
 	}
+	static JPanel panel;
 
 	/**
 	 * Create the frame.
@@ -59,6 +61,7 @@ public class Estoque extends JInternalFrame {
 		getContentPane().add(lblProduto);
 		
 		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"0-3 meses", "3-8 meses", "8-12 meses", "12-24 meses", "24-36 meses", "Acima de 36 meses"}));
 		comboBox.setBounds(75, 11, 475, 21);
 		getContentPane().add(comboBox);
 		
@@ -98,13 +101,18 @@ public class Estoque extends JInternalFrame {
 		table = new JTable();
 		scrollPane.setViewportView(table);
 		
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel.setLayout(null);
 		panel.setBackground(Color.WHITE);
 		panel.setBounds(0, 369, 618, 35);
 		getContentPane().add(panel);
 		
 		JButton btnMudarEra = new JButton("Mudar \u00C9ra");
+		btnMudarEra.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mudarDeEra();
+			}
+		});
 		btnMudarEra.setIcon(new ImageIcon(Estoque.class.getResource("/image/icAlt.png")));
 		btnMudarEra.setBounds(148, 0, 135, 32);
 		panel.add(btnMudarEra);
@@ -125,6 +133,11 @@ public class Estoque extends JInternalFrame {
 		panel.add(btnFechar);
 		
 		JButton btnIncluir = new JButton("Lan\u00E7ar");
+		btnIncluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				lancar();
+			}
+		});
 		btnIncluir.setIcon(new ImageIcon(Estoque.class.getResource("/image/icLanc.png")));
 		btnIncluir.setBounds(10, 0, 135, 32);
 		panel.add(btnIncluir);
@@ -136,5 +149,33 @@ public class Estoque extends JInternalFrame {
 		Inicio.estoque=null;
 		Inicio.setBotaoEstoque(true);
 	}
-
+	static MudarDeEra mudaDeEra = null;
+	public void mudarDeEra(){
+		mudaDeEra = new MudarDeEra();
+		Inicio.addTela(mudaDeEra);
+		mudaDeEra.setVisible(true);
+		try{
+			mudaDeEra.setSelected(true);
+		}catch(Exception e){}		
+		setBotoes(false);
+	}
+	//
+	static LancarEstoque lancarEstoque =null;
+	public void lancar(){
+		lancarEstoque = new LancarEstoque();
+		Inicio.addTela(lancarEstoque);
+		lancarEstoque.setVisible(true);
+		try{
+			lancarEstoque.setSelected(true);
+		}catch(Exception e){}		
+		setBotoes(false);
+	}
+	
+	
+	
+	
+	//
+	public static void setBotoes(boolean a){
+		panel.setVisible(a);
+	}
 }

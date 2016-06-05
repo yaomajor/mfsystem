@@ -59,6 +59,9 @@ public class Inicio extends JFrame {
 	 */
 	static JDesktopPane desktopPane;
 	public Inicio() {
+		setTitle("DMG");
+		this.setExtendedState(JFrame.MAXIMIZED_BOTH);// Inicializa a Tela
+		// Maximizada
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1052, 768);
 		contentPane = new JPanel();
@@ -94,6 +97,10 @@ public class Inicio extends JFrame {
 		desktopPane.add(label);
 		
 		JButton btnNewButton = new JButton("");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnNewButton.setIcon(new ImageIcon(Inicio.class.getResource("/image/icSetar.png")));
 		btnNewButton.setBounds(928, 19, 26, 24);
 		desktopPane.add(btnNewButton);
@@ -229,6 +236,11 @@ public class Inicio extends JFrame {
 		btnEstoque.setFont(new Font("Tahoma", Font.BOLD, 16));
 		btnEstoque.setBounds(426, 179, 127, 104);
 		desktopPane.add(btnEstoque);
+		
+		JLabel label_11 = new JLabel("");
+		label_11.setIcon(new ImageIcon(Inicio.class.getResource("/image/dmg.png")));
+		label_11.setBounds(617, 170, 269, 113);
+		desktopPane.add(label_11);
 		
 	}
 	//

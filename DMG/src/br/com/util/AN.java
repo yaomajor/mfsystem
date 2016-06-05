@@ -26,6 +26,21 @@ public class AN {
 	public static PreparedStatement stmtP = null;
 	
 	public static Connection oConn = null;
+	
+	public static String retAteTraco(String a) {
+		String ret = "0";
+		int x = a.indexOf('-');
+		if (x > 0) {
+			x = x - 1;
+			try {
+				a = a.substring(0, x);
+			} catch (Exception e) {
+			}
+			ret = a;
+		}
+		return ret;
+	}
+	
 	public static String oitoDigitos(String num) {
 		String ret = "";
 		try {

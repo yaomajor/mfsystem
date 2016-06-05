@@ -22,6 +22,10 @@ import javax.swing.DefaultComboBoxModel;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.Font;
+import javax.swing.JButton;
+import javax.swing.ImageIcon;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class LancNota extends JInternalFrame {
 	private JTextField textVend;
@@ -40,27 +44,18 @@ public class LancNota extends JInternalFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					LancNota frame = new LancNota();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	
 	JComboBox comboProd;
 	JComboBox comboSexo;
 	/**
 	 * Create the frame.
 	 */
+	
+	String op = "";
 	public LancNota() {
 		getContentPane().setBackground(Color.WHITE);
 		setIconifiable(true);
-		setBounds(100, 100, 603, 443);
+		setBounds(100, 100, 603, 359);
 		getContentPane().setLayout(null);
 		
 		JLabel lblVendedor = new JLabel("Vendedor:");
@@ -288,6 +283,32 @@ public class LancNota extends JInternalFrame {
 		textEnt.setColumns(10);
 		textEnt.setBounds(227, 44, 67, 20);
 		getContentPane().add(textEnt);
+		
+		JButton btnIncluir = new JButton("Gravar");
+		btnIncluir.setIcon(new ImageIcon(LancNota.class.getResource("/image/icSalvar2.png")));
+		btnIncluir.setBounds(175, 267, 115, 29);
+		getContentPane().add(btnIncluir);
+		
+		JButton btnFechar = new JButton("Fechar");
+		btnFechar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				fechar();
+			}
+		});
+		btnFechar.setIcon(new ImageIcon(LancNota.class.getResource("/image/icSair.png")));
+		btnFechar.setBounds(294, 267, 115, 29);
+		getContentPane().add(btnFechar);
 
 	}
+	public void fechar(){
+		dispose();
+		try{
+			Inicio.limparTela(MovNotaFiscal.lancNota);
+			MovNotaFiscal.lancNota=null;
+			Inicio.movNotaFiscal.setSelected(true);
+			MovNotaFiscal.setBotoes(true);
+		}catch(Exception e){}
+		
+	}
+	
 }

@@ -8,6 +8,9 @@ import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+
+import br.com.util.JSpinnerMHM;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -37,6 +40,7 @@ public class MudarDeEra extends JInternalFrame {
 	 * Create the frame.
 	 */
 	public MudarDeEra() {
+		setFrameIcon(new ImageIcon(MudarDeEra.class.getResource("/image/icEstoq.png")));
 		setTitle("Mudan\u00E7a de ERA");
 		setIconifiable(true);
 		getContentPane().setBackground(Color.WHITE);
@@ -72,6 +76,7 @@ public class MudarDeEra extends JInternalFrame {
 		btnFechar.setIcon(new ImageIcon(MudarDeEra.class.getResource("/image/icSair.png")));
 		btnFechar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				fechar();
 			}
 		});
 		btnFechar.setBounds(233, 198, 115, 29);
@@ -82,14 +87,23 @@ public class MudarDeEra extends JInternalFrame {
 		lblQuantidade.setBounds(10, 141, 74, 20);
 		getContentPane().add(lblQuantidade);
 		
-		JSpinner spinner = new JSpinner();
+		JSpinner spinner = new JSpinnerMHM();
 		spinner.setBounds(85, 141, 46, 20);
 		getContentPane().add(spinner);
 		
 		JLabel label = new JLabel("");
-		label.setIcon(new ImageIcon(MudarDeEra.class.getResource("/image/icMudaEra.png")));
-		label.setBounds(10, 0, 377, 85);
+		label.setIcon(new ImageIcon(MudarDeEra.class.getResource("/image/icMudaEra2.png")));
+		label.setBounds(138, 0, 317, 85);
 		getContentPane().add(label);
 
+	}
+	public void fechar(){
+		dispose();
+		try{
+			Inicio.limparTela(Estoque.mudaDeEra);
+			Estoque.mudaDeEra=null;
+			Inicio.estoque.setSelected(true);
+			Estoque.setBotoes(true);
+		}catch(Exception e){}
 	}
 }

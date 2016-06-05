@@ -9,6 +9,7 @@ import javax.swing.SwingConstants;
 
 import br.com.util.JTextData;
 import br.com.util.JTextData2;
+import br.com.util.JTextFieldFocu;
 
 import java.awt.Font;
 import javax.swing.JTextField;
@@ -29,6 +30,7 @@ public class MovNotaFiscal extends JInternalFrame {
 	private JTextField textDataDe;
 	private JTextField textDataA;
 
+	static JPanel panel;
 	/**
 	 * Launch the application.
 	 */
@@ -60,7 +62,7 @@ public class MovNotaFiscal extends JInternalFrame {
 		lblCliente.setBounds(0, 11, 67, 21);
 		getContentPane().add(lblCliente);
 		
-		textField = new JTextField();
+		textField = new JTextFieldFocu();
 		textField.setBounds(72, 11, 330, 20);
 		getContentPane().add(textField);
 		textField.setColumns(10);
@@ -108,13 +110,18 @@ public class MovNotaFiscal extends JInternalFrame {
 		lblf.setBounds(402, 11, 27, 21);
 		getContentPane().add(lblf);
 		
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel.setBackground(Color.WHITE);
 		panel.setBounds(0, 403, 701, 35);
 		getContentPane().add(panel);
 		panel.setLayout(null);
 		
 		JButton btnLanar = new JButton("Lan\u00E7ar");
+		btnLanar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				lancar();
+			}
+		});
 		btnLanar.setBounds(10, 0, 135, 32);
 		panel.add(btnLanar);
 		btnLanar.setIcon(new ImageIcon(MovNotaFiscal.class.getResource("/image/icLanc.png")));
@@ -156,10 +163,24 @@ public class MovNotaFiscal extends JInternalFrame {
 		getContentPane().add(comboBox);
 
 	}
+	static LancNota lancNota = null;
+	
+	public void lancar(){
+		lancNota = new LancNota();
+		Inicio.addTela(lancNota);
+		lancNota.setVisible(true);
+		try{
+			lancNota.setSelected(true);
+		}catch(Exception e){}
+		setBotoes(false);
+	}
 	public void fechar(){
 		dispose();
 		Inicio.limparTela(Inicio.movNotaFiscal);
 		Inicio.movNotaFiscal=null;
 		Inicio.setBotaoMovNotaFiscal(true);
+	}
+	public static void setBotoes(boolean a){
+		panel.setVisible(a);
 	}
 }
