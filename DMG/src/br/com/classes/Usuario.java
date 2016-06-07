@@ -45,10 +45,10 @@ public class Usuario {
 			}
 			if(codigo<=0){
 				sql1 = "select count(usuario_id) as total from usuario where login like '%"+desc+"%' ";
-				sql2 = "select usuario_id, login from usuario c where login like '%"+desc+"%' ";
+				sql2 = "select usuario_id, login, senha, pode_mudar_era, pode_lanc_est from usuario c where login like '%"+desc+"%' ";
 			}else{
 				sql1 = "select count(usuario_id) as total from usuario where usuario_id="+codigo;
-				sql2 = "select usuario_id, login from usuario c where usuario_id="+codigo;
+				sql2 = "select usuario_id, login, senha, pode_mudar_era, pode_lanc_est from usuario c where usuario_id="+codigo;
 			}
 			int i = 0;
 			rs = (ResultSet) stmt.executeQuery(sql1);
@@ -82,18 +82,20 @@ public class Usuario {
 		try{
 			oConn = (Connection) Conexao.abrirConexao();			
 			stmt = (Statement) oConn.createStatement();			
-			rs = stmt.executeQuery("Select count(login) as total from usuario where login is not null "+where);
+			rs = stmt.executeQuery("Select count(login) as total from usuario c where login is not null "+where);
 			int total =0;
 			if(rs.next()){
 				total = rs.getInt("total");				
 			}
 			if(total>0){
-				ret = new String[total][2];
-				rs = stmt.executeQuery("Select c.usuario_id, c.login  from usuario c where usuario is not null "+where);
+				ret = new String[total][4];
+				rs = stmt.executeQuery("Select c.usuario_id, c.login, senha, pode_mudar_era, pode_lanc_est  from usuario c where login  is not null "+where);
 				int i=0;
 				while(rs.next()){
 					ret[i][0] = rs.getString("usuario_id");
 					ret[i][1] = rs.getString("login");
+					ret[i][2] = rs.getString("pode_mudar_era");
+					ret[i][3] = rs.getString("pode_lanc_est");
 					i++;
 				}
 			}
@@ -110,9 +112,74 @@ public class Usuario {
 		return ret;
 	}
 	
+	public String pxoID(){
+		String ret = "000001";
+		try{
+			oConn = (Connection) Conexao.abrirConexao();			
+			stmt = (Statement) oConn.createStatement();			
+			rs = stmt.executeQuery("Select usuario_id  from usuario where login is not null order by usuario_id desc limit 1");
+			int total =0;
+			if(rs.next()){
+				total = rs.getInt("usuario_id");	
+				total++;
+				ret= AN.seisDigitos(String.valueOf(total));
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally{
+			Conexao.fecharConexao();
+			try{rs.close();}catch(Exception e){}
+			try{stmt.close();}catch(Exception e){}
+			try{oConn.close();}catch(Exception e){}
+		}
+		
+		return ret;
+	}
 	
-	
-	
+	public boolean existeID(String id) {
+		boolean ret = false;	
+		try {
+			String sql = "select usuario_id from usuario where usuario_id="+id;
+			
+			oConn = (Connection) Conexao.abrirConexao();
+			stmt = (Statement) oConn.createStatement();			
+			rs = (ResultSet) stmt.executeQuery(sql);
+			if(rs.next()) {
+				ret=true;
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();			
+		}finally{
+			Conexao.fecharConexao();
+			try{rs.close();}catch(Exception e){}
+			try{oConn.close();}catch(Exception e){}
+			try{stmt.close();}catch(Exception e){}
+		}
+		return ret;
+	}
+	//
+	public boolean existeUsuario(String desc) {
+		boolean ret = false;	
+		try {
+			String sql = "select usuario_id from usuario where login='"+desc+"'";
+			
+			oConn = (Connection) Conexao.abrirConexao();
+			stmt = (Statement) oConn.createStatement();			
+			rs = (ResultSet) stmt.executeQuery(sql);
+			if(rs.next()) {
+				ret=true;
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();			
+		}finally{
+			Conexao.fecharConexao();
+			try{rs.close();}catch(Exception e){}
+			try{oConn.close();}catch(Exception e){}
+			try{stmt.close();}catch(Exception e){}
+		}
+		return ret;
+	}
 	/*
 	 * 
 	 * Fim BUSCAS
@@ -120,14 +187,15 @@ public class Usuario {
 	 */
 	//
 	//
-	public boolean incluirUsuario(int id, String login, String senha, String podeMudarEra){
+	public boolean incluirUsuario(int id, String login, String senha, String podeMudarEra, String podeLancEst){
 		try{
 			oConn = (Connection) Conexao.abrirConexao();			
-			stmtP = (PreparedStatement) oConn.prepareStatement("INSERT INTO USUARIO(USUARIO_ID, LOGIN, SENHA, PODE_MUDAR_ERA) VALUES(?, ?,?,?)");
+			stmtP = (PreparedStatement) oConn.prepareStatement("INSERT INTO USUARIO(USUARIO_ID, LOGIN, SENHA, PODE_MUDAR_ERA, PODE_LANC_EST) VALUES(?, ?,?,?,?)");
 			stmtP.setInt(1, id);
 			stmtP.setString(2, login);
 			stmtP.setString(3, senha);
 			stmtP.setString(4, podeMudarEra);
+			stmtP.setString(5, podeLancEst);
 			stmtP.execute();
 			return true;
 		}catch(Exception e){
@@ -142,6 +210,26 @@ public class Usuario {
 	/*
 	 * Alterar
 	 */
+	
+	public boolean alterar(int id, String login, String podeMudarEra, String podeLancEst){
+		try{
+			oConn = (Connection) Conexao.abrirConexao();			
+			stmtP = (PreparedStatement) oConn.prepareStatement("UPDATE usuario SET LOGIN=?, PODE_MUDAR_ERA=?, PODE_LANC_EST=?  WHERE USUARIO_ID=?");
+			stmtP.setString(1, login);
+			stmtP.setString(2, podeMudarEra);
+			stmtP.setString(3, podeLancEst);
+			stmtP.setInt(4, id);			
+			stmtP.execute();
+			return true;
+		}catch(Exception e){
+			return false;
+		}finally{
+			Conexao.fecharConexao();
+			try{rs.close();}catch(Exception e){}
+			try{stmtP.close();}catch(Exception e){}
+			try{oConn.close();}catch(Exception e){}
+		}	
+	}	
 	public boolean alterarSenha(int id, String senha){
 		try{
 			oConn = (Connection) Conexao.abrirConexao();			
@@ -185,30 +273,7 @@ public class Usuario {
 	}
 	
 	
-	public boolean existeUsuarioNome(String login){
-		boolean ret = false;
-		
-		String sql = "SELECT login FROM USUARIO  where login='"+login+"'";
-		try{
-			oConn = (Connection) Conexao.abrirConexao();
-			stmt = (Statement) oConn.createStatement();
-			rs = stmt.executeQuery(sql);
-			
-			if(rs.next()){
-				ret = true;
-			}
-			
-		}catch(Exception e){
-			e.printStackTrace();
-		}finally{
-			Conexao.fecharConexao();
-			try{rs.close();}catch(Exception e){}
-			try{stmt.close();}catch(Exception e){}
-			try{stmtP.close();}catch(Exception e){}
-			try{oConn.close();}catch(Exception e){}
-		}
-		return ret;
-	}
+	
 	public String[][] buscarPassandoMatrizCad(String sql1, String sql2) {
 		String[][] ret = null;	
 		try {
