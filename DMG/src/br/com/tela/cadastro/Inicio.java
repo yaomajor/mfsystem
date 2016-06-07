@@ -26,6 +26,9 @@ import java.awt.event.ActionEvent;
 
 public class Inicio extends JFrame {
 
+	public static ProdutorRuralConsulta produtorRuralConsulta;
+	private static JButton btnProdutor;
+	
 	public static void addTela(Component a) {
 		desktopPane.add(a);
 	}
@@ -54,11 +57,13 @@ public class Inicio extends JFrame {
 	static JButton btnNotaFiscal;
 	static JButton btnUsurio;
 	static JButton btnEstoque;
+	
 	/**
 	 * Create the frame.
 	 */
 	static JDesktopPane desktopPane;
 	public Inicio() {
+		
 		setTitle("DMG");
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);// Inicializa a Tela
 		// Maximizada
@@ -73,13 +78,18 @@ public class Inicio extends JFrame {
 		this.setContentPane(desktopPane);
 		desktopPane.setLayout(null);
 		
-		JButton btnCliente = new JButton("Produtor");
-		btnCliente.setFont(new Font("Tahoma", Font.BOLD, 16));
-		btnCliente.setHorizontalTextPosition(SwingConstants.CENTER);
-		btnCliente.setVerticalTextPosition(SwingConstants.BOTTOM);
-		btnCliente.setIcon(new ImageIcon(Inicio.class.getResource("/image/icCliente.png")));
-		btnCliente.setBounds(15, 179, 127, 104);
-		desktopPane.add(btnCliente);
+		btnProdutor = new JButton("Produtor");
+		btnProdutor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				produtorRural();
+			}
+		});
+		btnProdutor.setFont(new Font("Tahoma", Font.BOLD, 16));
+		btnProdutor.setHorizontalTextPosition(SwingConstants.CENTER);
+		btnProdutor.setVerticalTextPosition(SwingConstants.BOTTOM);
+		btnProdutor.setIcon(new ImageIcon(Inicio.class.getResource("/image/icCliente.png")));
+		btnProdutor.setBounds(15, 179, 127, 104);
+		desktopPane.add(btnProdutor);
 		
 		JLabel lblCliente = new JLabel("Cliente:");
 		lblCliente.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -287,5 +297,19 @@ public class Inicio extends JFrame {
 	}
 	public static void setBotaoEstoque(boolean a){
 		btnEstoque.setEnabled(a);	
+	}
+	
+	private void produtorRural() {
+		produtorRuralConsulta = new ProdutorRuralConsulta();
+		addTela(produtorRuralConsulta);
+		produtorRuralConsulta.setVisible(true);
+		try{
+			produtorRuralConsulta.setSelected(true);
+		}catch(Exception e){}
+		setBotaoProdutorRural(false);
+	}
+	
+	public static void setBotaoProdutorRural(boolean a){
+		btnProdutor.setEnabled(a);	
 	}
 }
