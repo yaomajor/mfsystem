@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.Size;	
 
 @Entity
 @Table(name="PRODUTOR_RURAL")
@@ -71,7 +71,7 @@ public class ProdutorRural implements Serializable{
 	public void setClienteContalidade(String clienteContalidade) {
 		this.clienteContalidade = clienteContalidade;
 	}
-
+	
 	public PessoaJuridica getPessoaJuridica() {
 		return pessoaJuridica;
 	}
@@ -79,7 +79,7 @@ public class ProdutorRural implements Serializable{
 	public void setPessoaJuridica(PessoaJuridica pessoaJuridica) {
 		this.pessoaJuridica = pessoaJuridica;
 	}
-
+	
 	public Long getJversion() {
 		return jversion;
 	}

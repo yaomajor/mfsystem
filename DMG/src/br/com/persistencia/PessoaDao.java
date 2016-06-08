@@ -22,51 +22,45 @@ public class PessoaDao extends Dao<Pessoa>{
 		super(Pessoa.class);
 	}
 	
-	 public void salvaProdutorRural(Pessoa pessoa, ProdutorRural produtorRural , PessoaJuridica pessoaJuridica ,List<Telefone> listaTelefone, Endereco endereco) throws Exception{
-	        EntityManager em = Conexao.getConexaoEM();
+	 public boolean salvaProdutorRural(Pessoa pessoa, ProdutorRural produtorRural , PessoaJuridica pessoaJuridica ,List<Telefone> listaTelefone, Endereco endereco) throws Exception{
+	        boolean retorno = true;
+		 	EntityManager em = Conexao.getConexaoEM();
 	        try {
 	            em.getTransaction().begin();
 	            
 	            if(pessoa.getId() == null){
-	            	em.persist(pessoa);
-	            }else{
-	            	em.merge(pessoa);
+	            	pessoa = em.merge(pessoa);
 	            }
 	            
 	            if(pessoaJuridica.getId() == null){
 	            	pessoaJuridica.setPessoa(pessoa);
 	            	em.persist(pessoaJuridica);
-	            }else{
-	            	em.merge(pessoaJuridica);
 	            }
 	            
 	            if(produtorRural.getId() == null){
 	            	produtorRural.setPessoaJuridica(pessoaJuridica);
 	            	em.persist(produtorRural);
-	            }else{
-	            	em.merge(produtorRural);
 	            }
 	            
 	            for(Telefone telefone : listaTelefone){
 	            	telefone.setPessoa(pessoa);
 	            	if(pessoaJuridica.getId() == null){
-	            		em.persist(telefone);
-	            	}else{
-		            	em.merge(telefone);
-		            }
+	            		em.merge(telefone);
+	            	}
 	            }
 	            
 	            if(endereco.getId() == null){
 	            	endereco.setPessoa(pessoa);
-	            	em.persist(endereco);
-	            }else{
 	            	em.merge(endereco);
 	            }
 	            
 	            em.getTransaction().commit();
 	        } catch (OptimisticLockException eO) {
+	        	retorno = false;
 	            throw new Excecoes(Mensagem.getMensagemProperties("jVersionErro"));
 	        } catch (Exception ex) {
+	        	ex.printStackTrace(System.out);
+	        	retorno = false;
 	            throw new Excecoes(ex, "pesquisarErro");
 	        } finally {
 	            if (em.getTransaction().isActive()) {
@@ -74,6 +68,6 @@ public class PessoaDao extends Dao<Pessoa>{
 	            }
 	            Conexao.fechaConexaoEM(em);
 	        }
+	        return retorno;
 	    }
-
 }

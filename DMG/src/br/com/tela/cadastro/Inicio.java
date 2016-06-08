@@ -292,7 +292,7 @@ public class Inicio extends JFrame {
 		estoque.setVisible(true);
 		try{
 			estoque.setSelected(true);
-		}catch(Exception e){}		
+		}catch(Exception e){}
 		setBotaoEstoque(false);
 	}
 	public static void setBotaoEstoque(boolean a){

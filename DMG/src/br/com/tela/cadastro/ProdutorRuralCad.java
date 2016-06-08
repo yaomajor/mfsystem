@@ -54,6 +54,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 	private JTextField txtNumero;
 	private JTextField txtContatoTel;
 	
+	private JButton btnAlterarTelefone;
+	
 	private JComboBox cbClienteContabilidade;
 	private JComboBox cbDddTelefone;
 	private JComboBox cbUf;
@@ -110,6 +112,8 @@ public class ProdutorRuralCad extends JInternalFrame {
         tbTelefone.setShowGrid(true);
         tbTelefone.setShowHorizontalLines(true);
         tbTelefone.setShowVerticalLines(true);
+        
+        btnAlterarTelefone.setEnabled(false);
 		
 	}
 
@@ -181,20 +185,20 @@ public class ProdutorRuralCad extends JInternalFrame {
 				incluirTelefone();
 			}
 		});
-		btnIncluirTelefone.setBounds(10, 36, 110, 23);
+		btnIncluirTelefone.setBounds(10, 36, 133, 23);
 		panel.add(btnIncluirTelefone);
 		
-		JButton btnAlterarTelefone = new JButton("Alterar Telefone");
+		btnAlterarTelefone = new JButton("Alterar Telefone");
 		btnAlterarTelefone.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				alterarTelefone();
 			}
 		});
-		btnAlterarTelefone.setBounds(133, 36, 111, 23);
+		btnAlterarTelefone.setBounds(153, 36, 127, 23);
 		panel.add(btnAlterarTelefone);
 		
 		JButton btnCancelarTelefone = new JButton("Cancelar");
-		btnCancelarTelefone.setBounds(253, 36, 89, 23);
+		btnCancelarTelefone.setBounds(290, 36, 89, 23);
 		panel.add(btnCancelarTelefone);
 		
 		txtNomePropriedade = new JTextField();
@@ -329,17 +333,17 @@ public class ProdutorRuralCad extends JInternalFrame {
 		
 		cbUf = new JComboBox();
 		cbUf.setModel(new DefaultComboBoxModel(new String[] {"SP"}));
-		cbUf.setBounds(41, 11, 39, 20);
+		cbUf.setBounds(38, 11, 42, 20);
 		panelEndereco.add(cbUf);
 		
 		JLabel label_11 = new JLabel("Cidade :");
-		label_11.setBounds(90, 14, 61, 14);
+		label_11.setBounds(101, 14, 52, 14);
 		panelEndereco.add(label_11);
 		label_11.setFont(new Font("Tahoma", Font.BOLD, 11));
 		
 		cbCidade = new JComboBox();
 		cbCidade.setModel(new DefaultComboBoxModel(new String[] {"Votuporanga"}));
-		cbCidade.setBounds(140, 11, 435, 20);
+		cbCidade.setBounds(151, 11, 424, 20);
 		panelEndereco.add(cbCidade);
 		
 		JLabel label_12 = new JLabel("Logradouro :");
@@ -432,11 +436,14 @@ public class ProdutorRuralCad extends JInternalFrame {
 			getEndereco().setNumero(txtNumero.getText());
 			
 			try {
-				getPessoaDao().salvaProdutorRural(getPessoa(), getProdutorRural(), getPessoaJuridica(), getListaTelefone(), getEndereco());
+				if(getPessoaDao().salvaProdutorRural(getPessoa(), getProdutorRural(), getPessoaJuridica(), getListaTelefone(), getEndereco())){
+					Mensagem.informacao("Produtor rural salvo com sucesso!");
+				}
+					
 			} catch (Exception e) {
 				Mensagem.erro("Erro ao salvar o Produtor Rural");
 			}
-			
+			fechar();
 		}
 	}
 	
@@ -462,7 +469,15 @@ public class ProdutorRuralCad extends JInternalFrame {
 			telefone.setNumero(txtTelefone.getText());
 			telefone.setContato(txtContatoTel.getText());
 			((TMlistaTelefone) tbTelefone.getModel()).adicionar(telefone);
+			limparDadosTelefone();
 		}
+	}
+	
+	private void limparDadosTelefone(){
+		//cbDddTelefone.getSelectedItem().toString()
+		txtTelefone.setText("");
+		txtContatoTel.setText("");
+		
 	}
 	
 	private boolean validaTelefone() {
@@ -491,7 +506,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 	public ProdutorRural getProdutorRural() {
 		if(produtorRural == null){
 			produtorRural = new ProdutorRural();
-			getProdutorRural().setPessoaJuridica(new PessoaJuridica());
+			//getProdutorRural().setPessoaJuridica(new PessoaJuridica());
 		}
 		return produtorRural;
 	}

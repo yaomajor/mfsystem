@@ -10,7 +10,7 @@ public class Mensagem {
 	 * @return Mensagem encontrada no ApplicationResources
 	 */
 	public static String getMensagemProperties(String textoChave){
-            String mensagem = java.util.ResourceBundle.getBundle("br.com.calc.gui.Bundle").getString(textoChave);
+            String mensagem = java.util.ResourceBundle.getBundle("br.com.tela.cadastro.Bundle").getString(textoChave);
             return mensagem;
 	}
 

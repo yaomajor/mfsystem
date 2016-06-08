@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 @Table(name="PESSOA_JURIDICA")
 public class PessoaJuridica implements Serializable{
 	private static final long serialVersionUID = -635231672387595013L;
-
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "ID")
@@ -30,12 +30,12 @@ public class PessoaJuridica implements Serializable{
 	@Column(name = "RAZAO_SOCIAL")
 	private String razaoSocial;
 	
-	@Size(min = 1, max = 100)
+	@Size(min = 0, max = 100)
 	@Column(name = "NOME_FANTASIA")
 	private String nomeFantasia;
-	
+
 	@NotNull
-	@Size(min = 1, max = 14)
+	@Size(min = 1, max = 18)
 	@Column(name = "CNPJ")
 	private String cnpj;
 	
