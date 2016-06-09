@@ -1,5 +1,10 @@
 package br.com.persistencia;
 
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import br.com.bancodedados.Dao;
 import br.com.entity.PessoaJuridica;
 
@@ -9,5 +14,4 @@ public class PessoaJuridicaDao extends Dao<PessoaJuridica>{
 	public PessoaJuridicaDao() {
 		super(PessoaJuridica.class);
 	}
-
 }

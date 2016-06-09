@@ -1,29 +1,55 @@
 package br.com.tela.cadastro;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextField;
+
+import org.apache.commons.lang.StringUtils;
+
+import br.com.entity.PessoaJuridica;
+import br.com.entity.ProdutorRural;
+import br.com.entity.Telefone;
+import br.com.exception.Excecoes;
+import br.com.persistencia.PessoaJuridicaDao;
+import br.com.persistencia.ProdutorRuralDao;
+import br.com.tablemodel.TMlistaProdutorRural;
+import br.com.tablemodel.TMlistaTelefone;
+import br.com.util.Mensagem;
+import br.com.util.Utils;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
+import javax.swing.ScrollPaneConstants;
 
 public class ProdutorRuralConsulta extends JInternalFrame {
-	private JTable table;
+	private JTable tbProdutor;
 	public static ProdutorRuralCad produtorRuralCad;
 	private static JPanel panelBotoes;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField textField_5;
-	private JTextField textField_6;
+	private JTextField txtCodigo;
+	private JTextField txtNomePropriedade;
+	private JTextField txtNomeFantasia;
+	private JTextField txtRazaoSocial;
+	private JTextField txtCnpj;
+	private JTextField txtInscricaoEstadual;
+	private JTextField txtCodigoPropriedade;
+	
+	private PessoaJuridica pessoaJuridica;
+	private ProdutorRural produtorRural;
+	
+	private PessoaJuridicaDao pessoaJuridicaDao;
+	private ProdutorRuralDao produtorRuralDao;
+	
+	private List<ProdutorRural> listaProdutorRural;
 
 	/**
 	 * Launch the application.
@@ -45,18 +71,42 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	 * Create the frame.
 	 */
 	public ProdutorRuralConsulta() {
+		iniacializaComponentes();
+		setLayout();
+	}
+	
+	private void setLayout() {
+		tbProdutor.setModel(new TMlistaProdutorRural());
+		tbProdutor.setBackground(Color.WHITE);
+        Utils.configuracaoJTable(tbProdutor);
+        //"Código", "Cód. Propriedade", "Cnpj", "Razão Social", "Nome Propriedade"
+        Utils.tamanhoJTable(tbProdutor, 20, 20, 50, 200, 200);
+        tbProdutor.getTableHeader().setFont(new Font("Dialog", Font.BOLD, 12));
+        tbProdutor.setFont(new Font("Dialog", Font.BOLD, 12));
+        tbProdutor.setGridColor(new Color(153,153,153));
+        tbProdutor.setShowGrid(true);
+        tbProdutor.setShowHorizontalLines(true);
+        tbProdutor.setShowVerticalLines(true);
+	}
+
+	private void iniacializaComponentes() {
 		setBounds(100, 100, 626, 437);
 		getContentPane().setLayout(null);
 		
-		table = new JTable();
-		table.setBounds(22, 133, 564, 183);
+		tbProdutor = new JTable();
+		tbProdutor.setBounds(22, 133, 564, 183);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 162, 590, 183);
-		getContentPane().add(scrollPane);
-		scrollPane.setViewportView(table);
+		JScrollPane spProdutor = new JScrollPane();
+		spProdutor.setBounds(10, 162, 590, 183);
+		getContentPane().add(spProdutor);
+		spProdutor.setViewportView(tbProdutor);
 		
 		JButton btnPesquisar = new JButton("Pesquisar");
+		btnPesquisar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pesquisar();
+			}
+		});
 		btnPesquisar.setBounds(10, 128, 116, 23);
 		getContentPane().add(btnPesquisar);
 		
@@ -86,20 +136,20 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 		btnFechar.setBounds(310, 11, 89, 23);
 		panelBotoes.add(btnFechar);
 		
-		textField = new JTextField();
-		textField.setColumns(10);
-		textField.setBounds(59, 97, 92, 20);
-		getContentPane().add(textField);
+		txtCodigo = new JTextField();
+		txtCodigo.setColumns(10);
+		txtCodigo.setBounds(59, 97, 92, 20);
+		getContentPane().add(txtCodigo);
 		
 		JLabel label = new JLabel("Nome Propriedade :");
 		label.setFont(new Font("Tahoma", Font.BOLD, 11));
 		label.setBounds(161, 100, 126, 14);
 		getContentPane().add(label);
 		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
-		textField_1.setBounds(276, 97, 324, 20);
-		getContentPane().add(textField_1);
+		txtNomePropriedade = new JTextField();
+		txtNomePropriedade.setColumns(10);
+		txtNomePropriedade.setBounds(276, 97, 324, 20);
+		getContentPane().add(txtNomePropriedade);
 		
 		JLabel label_1 = new JLabel("C\u00F3digo :");
 		label_1.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -111,15 +161,15 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 		label_2.setBounds(10, 69, 92, 14);
 		getContentPane().add(label_2);
 		
-		textField_2 = new JTextField();
-		textField_2.setColumns(10);
-		textField_2.setBounds(102, 66, 498, 20);
-		getContentPane().add(textField_2);
+		txtNomeFantasia = new JTextField();
+		txtNomeFantasia.setColumns(10);
+		txtNomeFantasia.setBounds(102, 66, 498, 20);
+		getContentPane().add(txtNomeFantasia);
 		
-		textField_3 = new JTextField();
-		textField_3.setColumns(10);
-		textField_3.setBounds(102, 38, 498, 20);
-		getContentPane().add(textField_3);
+		txtRazaoSocial = new JTextField();
+		txtRazaoSocial.setColumns(10);
+		txtRazaoSocial.setBounds(102, 38, 498, 20);
+		getContentPane().add(txtRazaoSocial);
 		
 		JLabel label_3 = new JLabel("Raz\u00E3o Social :");
 		label_3.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -131,38 +181,37 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 		label_4.setBounds(10, 14, 40, 14);
 		getContentPane().add(label_4);
 		
-		textField_4 = new JTextField();
-		textField_4.setColumns(10);
-		textField_4.setBounds(60, 11, 140, 20);
-		getContentPane().add(textField_4);
+		txtCnpj = new JTextField();
+		txtCnpj.setColumns(10);
+		txtCnpj.setBounds(60, 11, 140, 20);
+		getContentPane().add(txtCnpj);
 		
 		JLabel label_5 = new JLabel("IE :");
 		label_5.setFont(new Font("Tahoma", Font.BOLD, 11));
 		label_5.setBounds(210, 14, 26, 14);
 		getContentPane().add(label_5);
 		
-		textField_5 = new JTextField();
-		textField_5.setColumns(10);
-		textField_5.setBounds(241, 11, 126, 20);
-		getContentPane().add(textField_5);
+		txtInscricaoEstadual = new JTextField();
+		txtInscricaoEstadual.setColumns(10);
+		txtInscricaoEstadual.setBounds(241, 11, 126, 20);
+		getContentPane().add(txtInscricaoEstadual);
 		
 		JLabel label_6 = new JLabel("C\u00F3digo Propriedade :");
 		label_6.setFont(new Font("Tahoma", Font.BOLD, 11));
 		label_6.setBounds(377, 14, 116, 14);
 		getContentPane().add(label_6);
 		
-		textField_6 = new JTextField();
-		textField_6.setColumns(10);
-		textField_6.setBounds(499, 11, 101, 20);
-		getContentPane().add(textField_6);
+		txtCodigoPropriedade = new JTextField();
+		txtCodigoPropriedade.setColumns(10);
+		txtCodigoPropriedade.setBounds(499, 11, 101, 20);
+		getContentPane().add(txtCodigoPropriedade);
 		btnIncluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				incluir();
 			}
 		});
-
 	}
-	
+
 	private void incluir() {
 		produtorRuralCad = new ProdutorRuralCad();
 		Inicio.addTela(produtorRuralCad);
@@ -183,5 +232,97 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 		Inicio.limparTela(Inicio.produtorRuralConsulta);
 		Inicio.produtorRuralConsulta=null;
 		Inicio.setBotaoProdutorRural(true);
+	}
+	
+	private void pesquisar() {
+		if(StringUtils.isNotBlank(txtCnpj.getText())){
+			getPessoaJuridica().setCnpj(Utils.formataCpfCnpj(txtCnpj.getText().replaceAll("\\D", "")));
+		}
+		if(StringUtils.isNotBlank(txtInscricaoEstadual.getText())){
+			getPessoaJuridica().setInscricaoEstadual(txtInscricaoEstadual.getText().replaceAll("\\D", ""));
+		}
+		if(StringUtils.isNotBlank(txtCodigoPropriedade.getText())){
+			getProdutorRural().setCodigoPropriedade(txtCodigoPropriedade.getText().replaceAll("\\D", ""));
+		}
+		if(StringUtils.isNotBlank(txtRazaoSocial.getText())){
+			getPessoaJuridica().setRazaoSocial(txtRazaoSocial.getText());
+		}
+		if(StringUtils.isNotBlank(txtNomeFantasia.getText())){
+			getPessoaJuridica().setNomeFantasia(txtNomeFantasia.getText());
+		}
+		if(StringUtils.isNotBlank(txtCodigo.getText())){
+			getProdutorRural().setCodigo(txtCodigo.getText());
+		}
+		if(StringUtils.isNotBlank(txtNomePropriedade.getText())){
+			getProdutorRural().setNomePropriedade(txtNomePropriedade.getText());
+		}
+		try {
+			setListaProdutorRural(getProdutorRuralDao().getProdutoRural(getProdutorRural(), getPessoaJuridica()));
+			if(getListaProdutorRural().isEmpty()){
+				Mensagem.informacao("Nenhum produtor rural foi encontrado!");
+			}else{
+				((TMlistaProdutorRural) tbProdutor.getModel()).adicionarLista(getListaProdutorRural());
+			}
+		} catch (Excecoes e) {
+			Mensagem.erro(e.getMessage());
+		}
+	}
+	
+	public PessoaJuridica getPessoaJuridica() {
+		if(pessoaJuridica == null){
+			pessoaJuridica = new PessoaJuridica();
+			setPessoaJuridica(new PessoaJuridica());
+		}
+		return pessoaJuridica;
+	}
+	
+	public void setPessoaJuridica(PessoaJuridica pessoaJuridica) {
+		this.pessoaJuridica = pessoaJuridica;
+	}
+	
+	public ProdutorRural getProdutorRural() {
+		if(produtorRural == null){
+			produtorRural = new ProdutorRural();
+		}
+		return produtorRural;
+	}
+	
+	public void setProdutorRural(ProdutorRural produtorRural) {
+		this.produtorRural = produtorRural;
+	}
+	
+	public PessoaJuridicaDao getPessoaJuridicaDao() {
+		if(pessoaJuridicaDao == null){
+			pessoaJuridicaDao = new PessoaJuridicaDao();
+			setPessoaJuridicaDao(new PessoaJuridicaDao());
+		}
+		return pessoaJuridicaDao;
+	}
+	
+	public void setPessoaJuridicaDao(PessoaJuridicaDao pessoaJuridicaDao) {
+		this.pessoaJuridicaDao = pessoaJuridicaDao;
+	}
+	
+	public ProdutorRuralDao getProdutorRuralDao() {
+		if(produtorRuralDao == null){
+			produtorRuralDao = new ProdutorRuralDao();
+			setProdutorRuralDao(new ProdutorRuralDao());
+		}
+		return produtorRuralDao;
+	}
+	
+	public void setProdutorRuralDao(ProdutorRuralDao produtorRuralDao) {
+		this.produtorRuralDao = produtorRuralDao;
+	}
+	
+	public List<ProdutorRural> getListaProdutorRural(){
+		if(listaProdutorRural == null){
+			listaProdutorRural = new ArrayList<ProdutorRural>();
+		}
+		return listaProdutorRural;
+	}
+	
+	public List<ProdutorRural> setListaProdutorRural(List<ProdutorRural> listaProdutorRural){
+		return this.listaProdutorRural = listaProdutorRural;
 	}
 }

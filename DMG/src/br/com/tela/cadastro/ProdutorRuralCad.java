@@ -417,7 +417,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 				getProdutorRural().setClienteContalidade("S");
 			}
 			getProdutorRural().setCodigo(txtCodigo.getText());
-			getProdutorRural().setCodigoPropriedade(txtCodigoPropriedade.getText());
+			getProdutorRural().setCodigoPropriedade(txtCodigoPropriedade.getText().replaceAll("\\D", ""));
 			getProdutorRural().setNomePropriedade(txtNomePropriedade.getText());
 			
 			getPessoaJuridica().setCnpj(Utils.formataCpfCnpj(txtCnpj.getText().replaceAll("\\D", "")));
@@ -506,7 +506,6 @@ public class ProdutorRuralCad extends JInternalFrame {
 	public ProdutorRural getProdutorRural() {
 		if(produtorRural == null){
 			produtorRural = new ProdutorRural();
-			//getProdutorRural().setPessoaJuridica(new PessoaJuridica());
 		}
 		return produtorRural;
 	}
