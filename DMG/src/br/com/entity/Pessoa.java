@@ -79,4 +79,9 @@ public class Pessoa implements Serializable{
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "Pessoa [id=" + id + ", dataCadastro=" + dataCadastro + ", jversion=" + jversion + "]";
+	}
 }

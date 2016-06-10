@@ -12,12 +12,10 @@ import org.apache.commons.lang.StringUtils;
 
 import br.com.entity.PessoaJuridica;
 import br.com.entity.ProdutorRural;
-import br.com.entity.Telefone;
 import br.com.exception.Excecoes;
 import br.com.persistencia.PessoaJuridicaDao;
 import br.com.persistencia.ProdutorRuralDao;
 import br.com.tablemodel.TMlistaProdutorRural;
-import br.com.tablemodel.TMlistaTelefone;
 import br.com.util.Mensagem;
 import br.com.util.Utils;
 
@@ -29,7 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class ProdutorRuralConsulta extends JInternalFrame {
 	private JTable tbProdutor;
@@ -50,6 +49,8 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	private ProdutorRuralDao produtorRuralDao;
 	
 	private List<ProdutorRural> listaProdutorRural;
+	
+	private int produtorSelecionado;
 
 	/**
 	 * Launch the application.
@@ -73,8 +74,23 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	public ProdutorRuralConsulta() {
 		iniacializaComponentes();
 		setLayout();
+		eventos();
 	}
 	
+	private void eventos() {
+		tbProdutor.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+            	produtorSelecionado = tbProdutor.getSelectedRow();
+            	if (produtorSelecionado >= 0){
+            		setProdutorRural(new ProdutorRural());
+            		setProdutorRural(((TMlistaProdutorRural) tbProdutor.getModel()).getObj(produtorSelecionado));
+            	}
+            }
+        });
+		
+	}
+
 	private void setLayout() {
 		tbProdutor.setModel(new TMlistaProdutorRural());
 		tbProdutor.setBackground(Color.WHITE);
@@ -120,6 +136,11 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 		panelBotoes.add(btnIncluir);
 		
 		JButton btnAlterar = new JButton("Alterar");
+		btnAlterar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				alterar();
+			}
+		});
 		btnAlterar.setBounds(112, 11, 89, 23);
 		panelBotoes.add(btnAlterar);
 		
@@ -211,6 +232,20 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 			}
 		});
 	}
+	
+	private void alterar() {
+		if(getProdutorRural().getId() != null && produtorSelecionado >= 0){
+			produtorRuralCad = new ProdutorRuralCad(getProdutorRural());
+			Inicio.addTela(produtorRuralCad);
+			produtorRuralCad.setVisible(true);
+			try{
+				produtorRuralCad.setSelected(true);
+			}catch(Exception ex){}		
+			setPanelBotoes(false);
+		}else{
+			Mensagem.informacao("Nenhum produtor rural foi selecionado");
+		}
+	}
 
 	private void incluir() {
 		produtorRuralCad = new ProdutorRuralCad();
@@ -235,6 +270,11 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	}
 	
 	private void pesquisar() {
+		((TMlistaProdutorRural) tbProdutor.getModel()).limpar();
+		
+		setPessoaJuridica(new PessoaJuridica());
+		setProdutorRural(new ProdutorRural());
+		
 		if(StringUtils.isNotBlank(txtCnpj.getText())){
 			getPessoaJuridica().setCnpj(Utils.formataCpfCnpj(txtCnpj.getText().replaceAll("\\D", "")));
 		}
@@ -257,7 +297,7 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 			getProdutorRural().setNomePropriedade(txtNomePropriedade.getText());
 		}
 		try {
-			setListaProdutorRural(getProdutorRuralDao().getProdutoRural(getProdutorRural(), getPessoaJuridica()));
+			setListaProdutorRural(getProdutorRuralDao().getListaProdutoRural(getProdutorRural(), getPessoaJuridica()));
 			if(getListaProdutorRural().isEmpty()){
 				Mensagem.informacao("Nenhum produtor rural foi encontrado!");
 			}else{

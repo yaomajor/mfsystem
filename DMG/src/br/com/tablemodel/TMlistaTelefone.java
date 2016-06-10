@@ -33,6 +33,7 @@ public class TMlistaTelefone extends DMGAbstractTableModel<Telefone>{
             case CONTATO:
                 return obj.getContato();
             case NUMERO:
+            	obj.setNumero(obj.getNumero().replaceAll("\\D", ""));
             	StringBuilder sb = new StringBuilder();
             	sb.append("(").append(obj.getDdd()).append(")");
             	StringBuilder tel = new StringBuilder(obj.getNumero());

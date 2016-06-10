@@ -6,6 +6,12 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import br.com.entity.ProdutorRural;
+import br.com.exception.Excecoes;
+import br.com.persistencia.ProdutorRuralDao;
+import br.com.util.Mensagem;
+
 import javax.swing.JDesktopPane;
 import java.awt.Color;
 import java.awt.Component;
@@ -22,12 +28,21 @@ import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.ComponentOrientation;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.event.ActionEvent;
 
 public class Inicio extends JFrame {
 
 	public static ProdutorRuralConsulta produtorRuralConsulta;
+	
 	private static JButton btnProdutor;
+	
+	private ProdutorRural produtorRural;
+	
+	private ProdutorRuralDao produtorRuralDao;
+	
+	private List<ProdutorRural> listaProdutorRural;
 	
 	public static void addTela(Component a) {
 		desktopPane.add(a);
@@ -252,6 +267,11 @@ public class Inicio extends JFrame {
 		label_11.setBounds(617, 170, 269, 113);
 		desktopPane.add(label_11);
 		
+		try {
+			setListaProdutorRural(getProdutorRuralDao().getListaProdutoRuralContabilidade());
+		} catch (Excecoes e1) {
+			Mensagem.erro("Erro ao buscar produtor rural cliente contabil!");
+		}
 	}
 	//
 	//
@@ -311,5 +331,41 @@ public class Inicio extends JFrame {
 	
 	public static void setBotaoProdutorRural(boolean a){
 		btnProdutor.setEnabled(a);	
+	}
+	
+	// gets e sets
+	
+	public ProdutorRural getProdutorRural() {
+		if(produtorRural == null){
+			produtorRural = new ProdutorRural();
+		}
+		return produtorRural;
+	}
+	
+	public void setProdutorRural(ProdutorRural produtorRural) {
+		this.produtorRural = produtorRural;
+	}
+	
+	public List<ProdutorRural> getListaProdutorRural(){
+		if(listaProdutorRural == null){
+			listaProdutorRural = new ArrayList<ProdutorRural>();
+		}
+		return listaProdutorRural;
+	}
+	
+	public List<ProdutorRural> setListaProdutorRural(List<ProdutorRural> listaProdutorRural){
+		return this.listaProdutorRural = listaProdutorRural;
+	}
+	
+	public ProdutorRuralDao getProdutorRuralDao() {
+		if(produtorRuralDao == null){
+			produtorRuralDao = new ProdutorRuralDao();
+			setProdutorRuralDao(new ProdutorRuralDao());
+		}
+		return produtorRuralDao;
+	}
+	
+	public void setProdutorRuralDao(ProdutorRuralDao produtorRuralDao) {
+		this.produtorRuralDao = produtorRuralDao;
 	}
 }
