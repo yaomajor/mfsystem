@@ -99,67 +99,18 @@ public class ProdutorRuralDao extends Dao<ProdutorRural>{
 		return retorno;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public ProdutorRural getProdutoRural(ProdutorRural produtorRural, PessoaJuridica pessoaJuridica) throws Excecoes {
+	public ProdutorRural getProdutoRural(PessoaJuridica pessoaJuridica) throws Excecoes {
 		ProdutorRural retorno = new ProdutorRural();
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT produtor FROM ProdutorRural produtor ")
 		.append(" LEFT JOIN FETCH produtor.pessoaJuridica as juridica")
-		.append(" WHERE 1 = 1");
+		.append(" WHERE juridica.cnpj = (:cnpj)");
 		
-		if(StringUtils.isNotBlank(pessoaJuridica.getCnpj())) {
-			sql.append(" AND juridica.cnpj = (:cnpj)");
-		}
-		
-		if(StringUtils.isNotBlank(pessoaJuridica.getInscricaoEstadual())) {
-			sql.append(" AND juridica.inscricaoEstadual = (:inscricaoEstadual)");
-		}
-		
-		if(StringUtils.isNotBlank(produtorRural.getCodigoPropriedade())) {
-			sql.append(" AND produtor.codigoPropriedade = (:codigoPropriedade)");
-		}
-		
-		if(StringUtils.isNotBlank(pessoaJuridica.getRazaoSocial())) {
-			sql.append(" AND LOWER(juridica.razaoSocial) like LOWER(:razaoSocial)");
-		}
-		
-		if(StringUtils.isNotBlank(pessoaJuridica.getNomeFantasia())) {
-			sql.append(" AND LOWER(juridica.nomeFantasia) like LOWER(:nomeFantasia)");
-		}
-		
-		if(StringUtils.isNotBlank(produtorRural.getCodigo())) {
-			sql.append(" AND produtor.codigo = (:codigo)");
-		}
-		
-		if(StringUtils.isNotBlank(produtorRural.getNomePropriedade())) {
-			sql.append(" AND LOWER(produtor.nomePropriedade) like LOWER(:nomePropriedade)");
-		}
 		EntityManager em = Conexao.getConexaoEM();
 		try {
 			
 			Query query = em.createQuery(sql.toString());
-			
-			if(StringUtils.isNotBlank(pessoaJuridica.getCnpj())) {
-				query.setParameter("cnpj", pessoaJuridica.getCnpj());
-			}
-			if(StringUtils.isNotBlank(pessoaJuridica.getInscricaoEstadual())) {
-				query.setParameter("inscricaoEstadual", pessoaJuridica.getInscricaoEstadual());
-			}
-			if(StringUtils.isNotBlank(produtorRural.getCodigoPropriedade())) {
-				query.setParameter("codigoPropriedade", produtorRural.getCodigoPropriedade());
-			}
-			if(StringUtils.isNotBlank(pessoaJuridica.getRazaoSocial())) {
-				query.setParameter("razaoSocial","%".concat(pessoaJuridica.getRazaoSocial()).concat("%"));
-			}
-			if(StringUtils.isNotBlank(pessoaJuridica.getNomeFantasia())) {
-				query.setParameter("nomeFantasia", "%".concat(pessoaJuridica.getNomeFantasia()).concat("%"));
-			}
-			if(StringUtils.isNotBlank(produtorRural.getCodigo())) {
-				query.setParameter("codigo", produtorRural.getCodigo());
-			}
-			if(StringUtils.isNotBlank(produtorRural.getNomePropriedade())) {
-				query.setParameter("nomePropriedade", "%".concat(produtorRural.getNomePropriedade()).concat("%"));
-			}
+			query.setParameter("cnpj", pessoaJuridica.getCnpj());
 			
 			retorno = (ProdutorRural) query.getSingleResult();
 			

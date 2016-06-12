@@ -79,6 +79,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 	private TelefoneDao telefoneDao;
 	private ProdutorRuralDao produtorRuralDao;
 	
+	boolean isAlterando = false;
+	
 	private List<Telefone> listaTelefone;;
 	
 	private JTable tbTelefone;
@@ -219,31 +221,19 @@ public class ProdutorRuralCad extends JInternalFrame {
         tbTelefone.setShowVerticalLines(true);
         
         btnCancelarTelefone.setEnabled(false);
+        btnAlterarTelefone.setEnabled(false);
 	}
 
 	private void eventos() {
-		/*
-		txtCnpj.addKeyListener(new KeyAdapter() {    
-            public void keyPressed(KeyEvent e) {    
-                if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_TAB) {
-                	try {
-						setProdutorRural(getProdutorRuralDao().getProdutoRural(getProdutorRural(), getPessoaJuridica()));
-						if(getProdutorRural() != null){
-							populaDados();
-						}
-					} catch (Excecoes e1) {
-						Mensagem.erro("Erro ao buscar produtor rural!");
-					}
-                }
-            }
-        });
-		*/
 		txtCnpj.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
             	try {
-					setProdutorRural(getProdutorRuralDao().getProdutoRural(getProdutorRural(), getPessoaJuridica()));
-					if(getProdutorRural() != null){
-						populaDados();
+					if(txtCnpj.getText() != null){
+						getPessoaJuridica().setCnpj(Utils.formataCpfCnpj(txtCnpj.getText().replaceAll("\\D", "")));
+						setProdutorRural(getProdutorRuralDao().getProdutoRural(getPessoaJuridica()));
+						if(getProdutorRural() != null && getProdutorRural().getId() != null){
+							populaDados();
+						}
 					}
 				} catch (Excecoes e1) {
 					Mensagem.erro("Erro ao buscar produtor rural!");
@@ -602,8 +592,11 @@ public class ProdutorRuralCad extends JInternalFrame {
 	
 	private void incluirTelefone() {
 		if(validaTelefone()){
-			if(telefoneSelecionado >= 0){
-				((TMlistaTelefone) tbTelefone.getModel()).excluir(telefoneSelecionado);
+			if(isAlterando){
+				if(telefoneSelecionado >= 0){
+					((TMlistaTelefone) tbTelefone.getModel()).excluir(telefoneSelecionado);
+				}
+				isAlterando = false;
 			}
 			getTelefone().setDdd(cbDddTelefone.getSelectedItem().toString());
 			getTelefone().setNumero(txtTelefone.getText());
@@ -650,6 +643,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 			btnAlterarTelefone.setEnabled(false);
 			btnCancelarTelefone.setEnabled(true);
 			btnIncluirTelefone.setEnabled(true);
+			isAlterando = true;
 		}else{
 			Mensagem.informacao("Nenhum telefone foi selecionado");
 		}
