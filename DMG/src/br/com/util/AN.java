@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -26,7 +27,35 @@ public class AN {
 	public static PreparedStatement stmtP = null;
 	
 	public static Connection oConn = null;
+	public static String doublePStringRS(double valor) {
+		String ret = "0";
+		DecimalFormat d = new DecimalFormat("#,###.00");
+		ret = d.format(valor);
+		return ret;
+	}
+	public static double stringPDouble(String val) {
+		double ret = 0;
+		
+		val = val.equals("")?"0":val;
+		try {
+			val = val.replace(".", "");
+		} catch (Exception e) {
+		}
+		try {
+			val = val.replace(",", ".");
+		} catch (Exception e) {
+		}
+		
 	
+		ret = Double.parseDouble(val);
+		
+//		try {
+//			ret = Double.parseDouble(val);
+//		} catch (Exception e) {
+//		}
+		
+		return ret;
+	}
 	public static String retAteTraco(String a) {
 		String ret = "0";
 		int x = a.indexOf('-');

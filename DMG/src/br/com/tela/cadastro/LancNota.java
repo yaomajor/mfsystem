@@ -26,6 +26,8 @@ import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class LancNota extends JInternalFrame {
 	private JTextField textVend;
@@ -149,6 +151,12 @@ public class LancNota extends JInternalFrame {
 		panel.add(lblVlrUnitrio);
 		
 		textVlrUnit = new JMoneyField();
+		textVlrUnit.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				total();
+			}
+		});
 		textVlrUnit.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
@@ -169,6 +177,12 @@ public class LancNota extends JInternalFrame {
 		panel.add(lblQuantidade);
 		
 		textQtd = new JTextFieldFocu();
+		textQtd.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				total();
+			}
+		});
 		textQtd.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
@@ -189,7 +203,7 @@ public class LancNota extends JInternalFrame {
 		lblTotal.setBounds(364, 50, 54, 20);
 		panel.add(lblTotal);
 		
-		textTotal = new JTextFieldFocu();
+		textTotal = new JTextField();
 		textTotal.setBackground(Color.BLUE);
 		textTotal.setFont(new Font("Tahoma", Font.BOLD, 11));
 		textTotal.setForeground(Color.YELLOW);
@@ -310,5 +324,10 @@ public class LancNota extends JInternalFrame {
 		}catch(Exception e){}
 		
 	}
-	
+	public void total(){
+		int qtd = AN.stringPInt(textQtd.getText());
+		double vlrUnit = AN.stringPDouble(textVlrUnit.getText());
+		textTotal.setText(AN.doublePStringRS(qtd*vlrUnit));
+		
+	}
 }

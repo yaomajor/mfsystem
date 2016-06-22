@@ -448,7 +448,8 @@ public class CadastroUsuario extends JInternalFrame {
 	}
 	//
 	public void alterar(){
-		String id = jTable.getValueAt(linhaSel, 0).toString();
+		String id = "";
+		try{id = jTable.getValueAt(linhaSel, 0).toString();}catch(Exception e){}
 		String login = textLogin.getText();		
 		String podeMudarEra = radioEraSim.isSelected()?"S":"N";
 		String podeMovEst   = radioEstSim.isSelected()?"S":"N";

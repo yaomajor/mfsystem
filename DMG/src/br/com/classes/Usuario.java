@@ -141,7 +141,7 @@ public class Usuario {
 		boolean ret = false;	
 		try {
 			String sql = "select usuario_id from usuario where usuario_id="+id;
-			
+			System.out.println("sql "+sql);
 			oConn = (Connection) Conexao.abrirConexao();
 			stmt = (Statement) oConn.createStatement();			
 			rs = (ResultSet) stmt.executeQuery(sql);
@@ -163,7 +163,7 @@ public class Usuario {
 		boolean ret = false;	
 		try {
 			String sql = "select usuario_id from usuario where login='"+desc+"'";
-			
+			System.out.println(sql);
 			oConn = (Connection) Conexao.abrirConexao();
 			stmt = (Statement) oConn.createStatement();			
 			rs = (ResultSet) stmt.executeQuery(sql);
