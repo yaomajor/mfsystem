@@ -125,5 +125,7 @@
 	<classpathentry kind="lib" path="lib/xmlbeans-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/XmlSchema-1.4.7.jar"/>
 	<classpathentry kind="lib" path="lib/ZXing-2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/FabricioAlingeri/workspace/DMG/lib/viacep-1.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/FabricioAlingeri/workspace/DMG/lib/jackson-jr-all-2.7.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

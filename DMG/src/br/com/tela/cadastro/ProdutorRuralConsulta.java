@@ -22,6 +22,8 @@ import br.com.util.Utils;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JButton;
+import javax.swing.JFrame;
+
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +74,7 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	 * Create the frame.
 	 */
 	public ProdutorRuralConsulta() {
+		setTitle("Consulta Produtor Rural");
 		iniacializaComponentes();
 		setLayout();
 		eventos();
@@ -106,6 +109,7 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	}
 
 	private void iniacializaComponentes() {
+		
 		setBounds(100, 100, 626, 437);
 		getContentPane().setLayout(null);
 		

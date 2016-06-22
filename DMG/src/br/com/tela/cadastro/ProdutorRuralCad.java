@@ -14,6 +14,9 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.github.gilbertotorrezan.viacep.se.ViaCEPClient;
+import com.github.gilbertotorrezan.viacep.shared.ViaCEPEndereco;
+
 import br.com.entity.Endereco;
 import br.com.entity.Pessoa;
 import br.com.entity.PessoaJuridica;
@@ -25,6 +28,7 @@ import br.com.persistencia.PessoaDao;
 import br.com.persistencia.ProdutorRuralDao;
 import br.com.persistencia.TelefoneDao;
 import br.com.tablemodel.TMlistaTelefone;
+import br.com.util.JTextCep;
 import br.com.util.Mensagem;
 import br.com.util.Utils;
 
@@ -32,6 +36,7 @@ import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -107,6 +112,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 	 * Create the frame.
 	 */
 	public ProdutorRuralCad() {
+		setTitle("Cadastro Produtor Rural");
 		iniacializaComponentes();
 		eventos();
 		setLayout();
@@ -256,6 +262,26 @@ public class ProdutorRuralCad extends JInternalFrame {
             	}
             }
         });
+		
+		txtCep.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+            	ViaCEPClient client = new ViaCEPClient();
+        		try {
+					ViaCEPEndereco endereco = client.getEndereco("15505-161");
+					if(endereco != null && endereco.getCep() != null){
+						//cbUf.setSelectedItem(anObject); endereco.getUf()
+						//cbCidade.setSelectedItem(anObject);endereco.getLocalidade()
+						txtLogradouro.setText(endereco.getLogradouro());
+						if(StringUtils.isNotBlank(endereco.getComplemento())){
+							txtComplemento.setText(endereco.getComplemento());
+						}						
+						txtBairro.setText(endereco.getBairro());
+					}
+				} catch (IOException e) {
+					Mensagem.erro("Não foi possível obter o endereco");
+				}
+            }
+		});
 	}
 
 	private void iniacializaComponentes() {
@@ -517,7 +543,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 		panel_2.add(label_9);
 		label_9.setFont(new Font("Tahoma", Font.BOLD, 11));
 		
-		txtCep = new JTextField();
+		txtCep = new JTextCep();
 		txtCep.setBounds(41, 5, 107, 20);
 		panel_2.add(txtCep);
 		txtCep.setColumns(10);
