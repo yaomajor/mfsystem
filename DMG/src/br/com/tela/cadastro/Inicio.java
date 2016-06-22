@@ -275,6 +275,7 @@ public class Inicio extends JFrame {
 		} catch (Excecoes e1) {
 			Mensagem.erro("Erro ao buscar produtor rural cliente contabil!");
 		}
+		
 	}
 	//
 	//
