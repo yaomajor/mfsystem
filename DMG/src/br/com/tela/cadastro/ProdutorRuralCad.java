@@ -267,7 +267,7 @@ public class ProdutorRuralCad extends JInternalFrame {
             public void focusLost(java.awt.event.FocusEvent evt) {
             	ViaCEPClient client = new ViaCEPClient();
         		try {
-					ViaCEPEndereco endereco = client.getEndereco("15505-161");
+					ViaCEPEndereco endereco = client.getEndereco(txtCep.getText());
 					if(endereco != null && endereco.getCep() != null){
 						//cbUf.setSelectedItem(anObject); endereco.getUf()
 						//cbCidade.setSelectedItem(anObject);endereco.getLocalidade()
