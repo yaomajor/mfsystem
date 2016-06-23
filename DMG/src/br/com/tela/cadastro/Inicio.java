@@ -38,7 +38,7 @@ import java.awt.event.ActionEvent;
 public class Inicio extends JFrame {
 
 	public static ProdutorRuralConsulta produtorRuralConsulta;
-	
+	public static JLabel labelCliente;
 	private static JButton btnProdutor;
 	
 	private ProdutorRural produtorRural;
@@ -116,17 +116,18 @@ public class Inicio extends JFrame {
 		lblCliente.setBounds(370, 20, 71, 21);
 		desktopPane.add(lblCliente);
 		
-		JLabel label = new JLabel("");
-		label.setOpaque(true);
-		label.setBackground(new Color(144, 238, 144));
-		label.setForeground(Color.BLACK);
-		label.setFont(new Font("Tahoma", Font.BOLD, 12));
-		label.setBounds(445, 20, 481, 21);
-		desktopPane.add(label);
+		labelCliente = new JLabel("");
+		labelCliente.setOpaque(true);
+		labelCliente.setBackground(new Color(144, 238, 144));
+		labelCliente.setForeground(Color.BLACK);
+		labelCliente.setFont(new Font("Tahoma", Font.BOLD, 12));
+		labelCliente.setBounds(445, 20, 481, 21);
+		desktopPane.add(labelCliente);
 		
 		JButton btnNewButton = new JButton("");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				f9Cliente("");
 			}
 		});
 		btnNewButton.setIcon(new ImageIcon(Inicio.class.getResource("/image/icSetar.png")));
@@ -227,6 +228,7 @@ public class Inicio extends JFrame {
 		desktopPane.add(label_10);
 		
 		btnNotaFiscal = new JButton("Nota Fiscal");
+		btnNotaFiscal.setEnabled(false);
 		btnNotaFiscal.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				movNotaFiscal();
@@ -253,6 +255,7 @@ public class Inicio extends JFrame {
 		desktopPane.add(btnUsurio);
 		
 		btnEstoque = new JButton("Estoque");
+		btnEstoque.setEnabled(false);
 		btnEstoque.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				estoque();
@@ -371,5 +374,20 @@ public class Inicio extends JFrame {
 	
 	public void setProdutorRuralDao(ProdutorRuralDao produtorRuralDao) {
 		this.produtorRuralDao = produtorRuralDao;
+	}
+	F9Cliente f9Cliente = null;
+	public void f9Cliente(String txt){
+		try {
+			f9Cliente = new F9Cliente(null, txt, "Inicio");
+			f9Cliente.setVisible(true);
+			f9Cliente.setModal(true);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public static void setEntrou(boolean a){
+		btnEstoque.setEnabled(a);
+		btnNotaFiscal.setEnabled(a);
 	}
 }

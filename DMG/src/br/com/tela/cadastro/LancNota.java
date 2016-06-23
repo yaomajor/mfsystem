@@ -90,6 +90,8 @@ public class LancNota extends JInternalFrame {
 		getContentPane().add(lblComprador);
 		
 		textComp = new JTextFieldFocu();
+		textComp.setText(Inicio.labelCliente.getText());
+		textComp.setEditable(false);
 		textComp.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
@@ -220,6 +222,14 @@ public class LancNota extends JInternalFrame {
 		panel.add(lblSexo);
 		
 		comboSexo = new JComboBox();
+		comboSexo.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){
+					btnIncluir.requestFocus();
+				}
+			}
+		});
 		comboSexo.setModel(new DefaultComboBoxModel(new String[] {"M", "F"}));
 		comboSexo.setBounds(322, 50, 42, 20);
 		panel.add(comboSexo);
@@ -298,7 +308,7 @@ public class LancNota extends JInternalFrame {
 		textEnt.setBounds(227, 44, 67, 20);
 		getContentPane().add(textEnt);
 		
-		JButton btnIncluir = new JButton("Gravar");
+		btnIncluir = new JButton("Gravar");
 		btnIncluir.setIcon(new ImageIcon(LancNota.class.getResource("/image/icSalvar2.png")));
 		btnIncluir.setBounds(175, 267, 115, 29);
 		getContentPane().add(btnIncluir);
@@ -312,7 +322,38 @@ public class LancNota extends JInternalFrame {
 		btnFechar.setIcon(new ImageIcon(LancNota.class.getResource("/image/icSair.png")));
 		btnFechar.setBounds(294, 267, 115, 29);
 		getContentPane().add(btnFechar);
+		
+		JLabel lblTipo = new JLabel("Tipo:");
+		lblTipo.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblTipo.setBounds(293, 44, 57, 20);
+		getContentPane().add(lblTipo);
+		
+		comboBox = new JComboBox();
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				tipo();
+			}
+		});
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"ENTRADA", "SA\u00CDDA"}));
+		comboBox.setBounds(352, 44, 148, 20);
+		getContentPane().add(comboBox);
 
+	}
+	JComboBox comboBox;
+	JButton btnIncluir ;
+	public void tipo(){
+		String tp = comboBox.getSelectedItem().toString();
+		if(tp.equals("ENTRADA")){
+			textVend.setEditable(true);
+			textVend.setText("");
+			textComp.setText(Inicio.labelCliente.getText());
+			textComp.setEditable(false);
+		}else{
+			textComp.setEditable(true);
+			textComp.setText("");
+			textVend.setText(Inicio.labelCliente.getText());
+			textVend.setEditable(false);
+		}
 	}
 	public void fechar(){
 		dispose();

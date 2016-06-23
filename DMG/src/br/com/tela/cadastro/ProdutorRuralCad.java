@@ -28,6 +28,7 @@ import br.com.persistencia.PessoaDao;
 import br.com.persistencia.ProdutorRuralDao;
 import br.com.persistencia.TelefoneDao;
 import br.com.tablemodel.TMlistaTelefone;
+import br.com.util.JTextCNPJ;
 import br.com.util.JTextCep;
 import br.com.util.Mensagem;
 import br.com.util.Utils;
@@ -378,7 +379,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 		label_2.setBounds(10, 14, 40, 14);
 		getContentPane().add(label_2);
 		
-		txtCnpj = new JTextField();
+		txtCnpj = new JTextCNPJ();
 		txtCnpj.setColumns(10);
 		txtCnpj.setBounds(60, 11, 140, 20);
 		getContentPane().add(txtCnpj);
