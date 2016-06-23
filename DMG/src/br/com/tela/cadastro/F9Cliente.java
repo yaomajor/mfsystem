@@ -227,19 +227,23 @@ public class F9Cliente extends JDialog {
 			if(codigo>0){
 				sql1 = "SELECT count(p.id) as total FROM pessoa p "		
 						+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
-						+ " where p.id is not null and p.id="+text;
+						+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
+						+ " where pr.cliente_contabilidade='S' and p.id is not null and p.id="+text;
 				sql2 = "SELECT p.id, pj.razao_social FROM pessoa p "
 						+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
-						+ " where p.id is not null and p.id="+text;
+						+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
+						+ " where pr.cliente_contabilidade='S' and p.id is not null and p.id="+text;
 				dados = c.buscarPassandoMatrizCad(sql1, sql2);
 			}
 			if(dados == null){
 				sql1 = "SELECT count(p.id) as total FROM pessoa p "
 						+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
-						+ " where pj.razao_social like '%"+text+"%'";
+						+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
+						+ " where pr.cliente_contabilidade='S' and pj.razao_social like '%"+text+"%'";
 				sql2 = "SELECT p.id, pj.razao_social FROM pessoa p "
 						+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
-						+ " where pj.razao_social like '%"+text+"%'";
+						+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
+						+ " where pr.cliente_contabilidade='S' and pj.razao_social like '%"+text+"%'";
 				dados = c.buscarPassandoMatrizCad(sql1, sql2);
 			}
 			if(dados != null){
