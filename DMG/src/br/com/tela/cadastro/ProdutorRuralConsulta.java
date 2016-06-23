@@ -22,7 +22,6 @@ import br.com.util.Utils;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 
 import java.awt.event.ActionListener;
 import java.util.ArrayList;

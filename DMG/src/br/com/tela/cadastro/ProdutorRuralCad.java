@@ -17,25 +17,33 @@ import org.apache.commons.lang.StringUtils;
 import com.github.gilbertotorrezan.viacep.se.ViaCEPClient;
 import com.github.gilbertotorrezan.viacep.shared.ViaCEPEndereco;
 
+import br.com.entity.Cidades;
 import br.com.entity.Endereco;
 import br.com.entity.Pessoa;
 import br.com.entity.PessoaJuridica;
 import br.com.entity.ProdutorRural;
 import br.com.entity.Telefone;
+import br.com.entity.Uf;
 import br.com.exception.Excecoes;
+import br.com.persistencia.CidadesDao;
 import br.com.persistencia.EnderecoDao;
 import br.com.persistencia.PessoaDao;
 import br.com.persistencia.ProdutorRuralDao;
 import br.com.persistencia.TelefoneDao;
+import br.com.persistencia.UfDao;
 import br.com.tablemodel.TMlistaTelefone;
 import br.com.util.JTextCNPJ;
 import br.com.util.JTextCep;
+import br.com.util.JTextFieldFocu;
+import br.com.util.JTextTel;
 import br.com.util.Mensagem;
+import br.com.util.TextFieldLimit;
 import br.com.util.Utils;
 
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -43,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -84,10 +91,14 @@ public class ProdutorRuralCad extends JInternalFrame {
 	private EnderecoDao enderecoDao;
 	private TelefoneDao telefoneDao;
 	private ProdutorRuralDao produtorRuralDao;
+	private UfDao ufDao;
+	private CidadesDao cidadesDao;
 	
 	boolean isAlterando = false;
 	
-	private List<Telefone> listaTelefone;;
+	private List<Telefone> listaTelefone;
+	private List<Uf> listaUf;
+	private List<Cidades> listaCidades;
 	
 	private JTable tbTelefone;
 	
@@ -194,8 +205,23 @@ public class ProdutorRuralCad extends JInternalFrame {
 			txtCep.setText(getEndereco().getCep());
 		}
 		
-		cbUf.setSelectedIndex(0);//getEndereco().getUf
-		cbCidade.setSelectedIndex(0);//getEndereco().setCidade(
+		if(getEndereco().getUf() != null){
+			for (int i = 0; i < cbUf.getItemCount(); i++) {
+				if (cbUf.getItemAt(i).equals(getEndereco().getUf())) {
+					cbUf.setSelectedIndex(i);
+				}
+			}
+		}
+		
+		carregaComboCidade(getEndereco().getUf());
+		
+		if(getEndereco().getCidade() != null){
+			for (int i = 0; i < cbCidade.getItemCount(); i++) {
+				if (cbCidade.getItemAt(i).equals(getEndereco().getCidade())) {
+					cbCidade.setSelectedIndex(i);
+				}
+			}
+		}
 		
 		if(getEndereco().getLogradouro() != null){
 			txtLogradouro.setText(getEndereco().getLogradouro());
@@ -229,6 +255,8 @@ public class ProdutorRuralCad extends JInternalFrame {
         
         btnCancelarTelefone.setEnabled(false);
         btnAlterarTelefone.setEnabled(false);
+        
+        carregaComboUf();
 	}
 
 	private void eventos() {
@@ -247,6 +275,21 @@ public class ProdutorRuralCad extends JInternalFrame {
 				}
             }
         });
+		
+		txtCodigo.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+            	//verificar se ja tem produtor com este codigo, se não for preenchido, colocar ID
+            }
+        });
+		
+		txtCnpj.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+					txtInscricaoEstadual.requestFocus();
+				}
+			}
+		});
 		
 		tbTelefone.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -270,8 +313,25 @@ public class ProdutorRuralCad extends JInternalFrame {
         		try {
 					ViaCEPEndereco endereco = client.getEndereco(txtCep.getText());
 					if(endereco != null && endereco.getCep() != null){
-						//cbUf.setSelectedItem(anObject); endereco.getUf()
-						//cbCidade.setSelectedItem(anObject);endereco.getLocalidade()
+						
+						if(endereco.getUf() != null){
+							for (int i = 0; i < cbUf.getItemCount(); i++) {
+								if (cbUf.getItemAt(i).equals(endereco.getUf())) {
+									cbUf.setSelectedIndex(i);
+								}
+							}
+						}
+						
+						carregaComboCidade(endereco.getUf());
+						
+						if(endereco.getLocalidade() != null){
+							for (int i = 0; i < cbCidade.getItemCount(); i++) {
+								if (cbCidade.getItemAt(i).equals(endereco.getLocalidade())) {
+									cbCidade.setSelectedIndex(i);
+								}
+							}
+						}
+						
 						txtLogradouro.setText(endereco.getLogradouro());
 						if(StringUtils.isNotBlank(endereco.getComplemento())){
 							txtComplemento.setText(endereco.getComplemento());
@@ -283,6 +343,12 @@ public class ProdutorRuralCad extends JInternalFrame {
 				}
             }
 		});
+		
+		cbUf.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+            	carregaComboCidade(cbUf.getSelectedItem().toString());
+            }
+        });
 	}
 
 	private void iniacializaComponentes() {
@@ -305,7 +371,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 		cbDddTelefone.setBounds(74, 8, 39, 20);
 		panel.add(cbDddTelefone);
 		
-		txtTelefone = new JTextField();
+		txtTelefone = new JTextTel();
+		txtTelefone.setDocument(new TextFieldLimit(20, false));
 		txtTelefone.setBounds(123, 8, 110, 20);
 		panel.add(txtTelefone);
 		txtTelefone.setColumns(10);
@@ -315,7 +382,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 		lblContato.setBounds(243, 11, 64, 14);
 		panel.add(lblContato);
 		
-		txtContatoTel = new JTextField();
+		txtContatoTel = new JTextFieldFocu();
+		txtContatoTel.setDocument(new TextFieldLimit(50, false));
 		txtContatoTel.setColumns(10);
 		txtContatoTel.setBounds(307, 8, 273, 20);
 		panel.add(txtContatoTel);
@@ -354,7 +422,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 		btnCancelarTelefone.setBounds(290, 36, 89, 23);
 		panel.add(btnCancelarTelefone);
 		
-		txtNomePropriedade = new JTextField();
+		txtNomePropriedade = new JTextFieldFocu();
+		txtNomePropriedade.setDocument(new TextFieldLimit(100, false));
 		txtNomePropriedade.setColumns(10);
 		txtNomePropriedade.setBounds(276, 97, 324, 20);
 		getContentPane().add(txtNomePropriedade);
@@ -364,7 +433,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 		label.setBounds(161, 100, 126, 14);
 		getContentPane().add(label);
 		
-		txtCodigo = new JTextField();
+		txtCodigo = new JTextFieldFocu();
+		txtCodigo.setDocument(new TextFieldLimit(20, true));
 		txtCodigo.setColumns(10);
 		txtCodigo.setBounds(59, 97, 92, 20);
 		getContentPane().add(txtCodigo);
@@ -380,6 +450,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 		getContentPane().add(label_2);
 		
 		txtCnpj = new JTextCNPJ();
+		txtCnpj.setDocument(new TextFieldLimit(14, false));
+		txtCnpj = new JTextCNPJ();
 		txtCnpj.setColumns(10);
 		txtCnpj.setBounds(60, 11, 140, 20);
 		getContentPane().add(txtCnpj);
@@ -389,7 +461,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 		label_3.setBounds(210, 14, 26, 14);
 		getContentPane().add(label_3);
 		
-		txtInscricaoEstadual = new JTextField();
+		txtInscricaoEstadual = new JTextFieldFocu();
+		txtInscricaoEstadual.setDocument(new TextFieldLimit(20, true));
 		txtInscricaoEstadual.setColumns(10);
 		txtInscricaoEstadual.setBounds(241, 11, 126, 20);
 		getContentPane().add(txtInscricaoEstadual);
@@ -399,7 +472,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 		label_4.setBounds(377, 14, 116, 14);
 		getContentPane().add(label_4);
 		
-		txtCodigoPropriedade = new JTextField();
+		txtCodigoPropriedade = new JTextFieldFocu();
+		txtCodigoPropriedade.setDocument(new TextFieldLimit(20, true));
 		txtCodigoPropriedade.setColumns(10);
 		txtCodigoPropriedade.setBounds(499, 11, 101, 20);
 		getContentPane().add(txtCodigoPropriedade);
@@ -443,7 +517,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 		label_5.setBounds(10, 40, 92, 14);
 		getContentPane().add(label_5);
 		
-		txtRazaoSocial = new JTextField();
+		txtRazaoSocial = new JTextFieldFocu();
+		txtRazaoSocial.setDocument(new TextFieldLimit(100, false));
 		txtRazaoSocial.setColumns(10);
 		txtRazaoSocial.setBounds(102, 38, 498, 20);
 		getContentPane().add(txtRazaoSocial);
@@ -453,7 +528,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 		label_6.setBounds(10, 69, 92, 14);
 		getContentPane().add(label_6);
 		
-		txtNomeFantasia = new JTextField();
+		txtNomeFantasia = new JTextFieldFocu();
+		txtNomePropriedade.setDocument(new TextFieldLimit(100, false));
 		txtNomeFantasia.setColumns(10);
 		txtNomeFantasia.setBounds(102, 66, 498, 20);
 		getContentPane().add(txtNomeFantasia);
@@ -485,7 +561,6 @@ public class ProdutorRuralCad extends JInternalFrame {
 		label_10.setFont(new Font("Tahoma", Font.BOLD, 11));
 		
 		cbUf = new JComboBox();
-		cbUf.setModel(new DefaultComboBoxModel(new String[] {"SP"}));
 		cbUf.setBounds(38, 11, 42, 20);
 		panelEndereco.add(cbUf);
 		
@@ -495,7 +570,6 @@ public class ProdutorRuralCad extends JInternalFrame {
 		label_11.setFont(new Font("Tahoma", Font.BOLD, 11));
 		
 		cbCidade = new JComboBox();
-		cbCidade.setModel(new DefaultComboBoxModel(new String[] {"Votuporanga"}));
 		cbCidade.setBounds(151, 11, 424, 20);
 		panelEndereco.add(cbCidade);
 		
@@ -504,7 +578,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 		panelEndereco.add(label_12);
 		label_12.setFont(new Font("Tahoma", Font.BOLD, 11));
 		
-		txtLogradouro = new JTextField();
+		txtLogradouro = new JTextFieldFocu();
+		txtLogradouro.setDocument(new TextFieldLimit(100, false));
 		txtLogradouro.setBounds(93, 41, 482, 20);
 		panelEndereco.add(txtLogradouro);
 		txtLogradouro.setColumns(10);
@@ -514,7 +589,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 		panelEndereco.add(label_13);
 		label_13.setFont(new Font("Tahoma", Font.BOLD, 11));
 		
-		txtComplemento = new JTextField();
+		txtComplemento = new JTextFieldFocu();
+		txtComplemento.setDocument(new TextFieldLimit(50, false));
 		txtComplemento.setBounds(95, 69, 482, 20);
 		panelEndereco.add(txtComplemento);
 		txtComplemento.setColumns(10);
@@ -524,12 +600,14 @@ public class ProdutorRuralCad extends JInternalFrame {
 		panelEndereco.add(label_14);
 		label_14.setFont(new Font("Tahoma", Font.BOLD, 11));
 		
-		txtBairro = new JTextField();
+		txtBairro = new JTextFieldFocu();
+		txtBairro.setDocument(new TextFieldLimit(100, false));
 		txtBairro.setBounds(95, 95, 324, 20);
 		panelEndereco.add(txtBairro);
 		txtBairro.setColumns(10);
 		
-		txtNumero = new JTextField();
+		txtNumero = new JTextFieldFocu();
+		txtNumero.setDocument(new TextFieldLimit(20, true));
 		txtNumero.setBounds(483, 95, 92, 20);
 		panelEndereco.add(txtNumero);
 		txtNumero.setColumns(10);
@@ -545,9 +623,58 @@ public class ProdutorRuralCad extends JInternalFrame {
 		label_9.setFont(new Font("Tahoma", Font.BOLD, 11));
 		
 		txtCep = new JTextCep();
+		txtCep.setDocument(new TextFieldLimit(9, false));
 		txtCep.setBounds(41, 5, 107, 20);
 		panel_2.add(txtCep);
 		txtCep.setColumns(10);
+		
+		/**
+		 * Fixo
+		 
+		//getProdutorRural
+		cbClienteContabilidade.setSelectedIndex(0);
+		txtCodigo.setText("1");
+		txtCodigoPropriedade.setText("123");
+		txtNomePropriedade.setText("Fazenda Esperanca");
+		
+		//getPessoaJuridica
+		txtCnpj.setText("12.011.650/0001-11");
+		txtInscricaoEstadual.setText("ISENTO");
+		txtRazaoSocial.setText("CHIQUINHO SORVETES RIO PRETO LTDA");
+		txtNomeFantasia.setText("CHIQUINHO SORVETES");
+		
+		//setListaTelefone
+		txtTelefone.setText("9782-9266");
+		txtContatoTel.setText("Fabricio");
+		
+		//getEndereco
+		txtCep.setText("15015-000");
+		*/
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void carregaComboUf() {
+		try {
+			setListaUf(getUfDao().getTodos("sigla"));
+			for(Uf uf : getListaUf()){
+				cbUf.addItem(uf.getSigla());
+			}
+		} catch (Excecoes e1) {
+			Mensagem.erro("Não foi possível obter as Ufs!");
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void carregaComboCidade(String uf) {
+		try {
+			cbCidade.removeAllItems();
+			setListaCidades(getCidadesDao().getListaCidadePorUf(uf));
+			for(Cidades cidade : getListaCidades()){
+				cbCidade.addItem(cidade.getNome());
+			}
+		} catch (Excecoes e1) {
+			Mensagem.erro("Não foi possível obter as Cidades!");
+		}
 	}
 
 	private void fechar() {
@@ -794,4 +921,48 @@ public class ProdutorRuralCad extends JInternalFrame {
 		this.produtorRuralDao = produtorRuralDao;
 	}
 	
+	public UfDao getUfDao() {
+		if(ufDao == null){
+			ufDao = new UfDao();
+		}
+		return ufDao;
+	}
+	
+	public void setUfDao(UfDao ufDao) {
+		this.ufDao = ufDao;
+	}
+	
+	public List<Uf> getListaUf(){
+		if(listaUf == null){
+			listaUf = new ArrayList<Uf>();
+		}
+		return listaUf;
+	}
+	
+	public List<Uf> setListaUf(List<Uf> listaUf){
+		return this.listaUf = listaUf;
+	}
+	
+	
+	public CidadesDao getCidadesDao() {
+		if(cidadesDao == null){
+			cidadesDao = new CidadesDao();
+		}
+		return cidadesDao;
+	}
+	
+	public void setCidadesDao(CidadesDao cidadesDao) {
+		this.cidadesDao = cidadesDao;
+	}
+	
+	public List<Cidades> getListaCidades(){
+		if(listaCidades == null){
+			listaCidades = new ArrayList<Cidades>();
+		}
+		return listaCidades;
+	}
+	
+	public List<Cidades> setListaCidades(List<Cidades> listaCidades){
+		return this.listaCidades = listaCidades;
+	}
 }

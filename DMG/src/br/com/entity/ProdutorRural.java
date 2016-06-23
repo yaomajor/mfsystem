@@ -2,6 +2,7 @@ package br.com.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,7 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
@@ -31,7 +32,7 @@ public class ProdutorRural implements Serializable{
 	private String clienteContalidade;
 	
 	@NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "ID_PESSOA_JURIDICA")
 	private PessoaJuridica pessoaJuridica;
 	
@@ -135,5 +136,12 @@ public class ProdutorRural implements Serializable{
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "ProdutorRural [id=" + id + ", clienteContalidade=" + clienteContalidade + ", pessoaJuridica="
+				+ pessoaJuridica + ", jversion=" + jversion + ", codigo=" + codigo + ", nomePropriedade="
+				+ nomePropriedade + ", codigoPropriedade=" + codigoPropriedade + "]";
 	}
 }

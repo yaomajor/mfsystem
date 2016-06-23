@@ -2,6 +2,7 @@ package br.com.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,7 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
@@ -26,7 +27,7 @@ public class Telefone implements Serializable{
 	private Long id;
 	
 	@NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "ID_PESSOA")
 	private Pessoa pessoa;
 
@@ -120,5 +121,11 @@ public class Telefone implements Serializable{
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Telefone [id=" + id + ", pessoa=" + pessoa + ", ddd=" + ddd + ", numero=" + numero + ", contato="
+				+ contato + ", jversion=" + jversion + "]";
 	}
 }

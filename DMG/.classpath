@@ -127,5 +127,6 @@
 	<classpathentry kind="lib" path="lib/jackson-jr-all-2.7.5.jar"/>
 	<classpathentry kind="lib" path="lib/viacep-1.2.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/javax.el-3.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

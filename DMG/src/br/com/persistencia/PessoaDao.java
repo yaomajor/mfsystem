@@ -6,6 +6,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.Query;
+import javax.persistence.RollbackException;
+import javax.validation.ConstraintViolationException;
 
 import br.com.bancodedados.Conexao;
 import br.com.bancodedados.Dao;
@@ -57,7 +59,7 @@ public class PessoaDao extends Dao<Pessoa>{
 	            	em.merge(telefone);
 	            }
             }
-            
+
             if(endereco.getId() == null){
             	endereco.setPessoa(pessoa);
             	em.persist(endereco);
@@ -69,7 +71,15 @@ public class PessoaDao extends Dao<Pessoa>{
         } catch (OptimisticLockException eO) {
         	retorno = false;
             throw new Excecoes(Mensagem.getMensagemProperties("jVersionErro"));
-        } catch (Exception ex) {
+        }catch (RollbackException ex) {
+        	ex.printStackTrace(System.out);
+			Throwable tr = ex.getCause(); 
+			if(tr.getCause() instanceof ConstraintViolationException) {
+				new Excecoes(ex, "constraintViolationException");
+			}
+			new Excecoes(ex, "alterarErro");
+		} catch (Exception ex) {
+			ex.printStackTrace(System.out);
         	retorno = false;
             throw new Excecoes(ex, "pesquisarErro");
         } finally {
