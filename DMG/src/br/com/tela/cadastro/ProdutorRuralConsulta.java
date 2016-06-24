@@ -5,22 +5,29 @@ import java.awt.EventQueue;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
 
+import br.com.entity.Endereco;
 import br.com.entity.PessoaJuridica;
 import br.com.entity.ProdutorRural;
+import br.com.entity.Telefone;
 import br.com.exception.Excecoes;
+import br.com.persistencia.EnderecoDao;
 import br.com.persistencia.PessoaJuridicaDao;
 import br.com.persistencia.ProdutorRuralDao;
+import br.com.persistencia.TelefoneDao;
 import br.com.tablemodel.TMlistaProdutorRural;
 import br.com.util.Mensagem;
 import br.com.util.Utils;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
@@ -30,6 +37,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.border.BevelBorder;
 
 public class ProdutorRuralConsulta extends JInternalFrame {
 	private JTable tbProdutor;
@@ -45,11 +53,15 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	
 	private PessoaJuridica pessoaJuridica;
 	private ProdutorRural produtorRural;
+	private Endereco endereco;
 	
 	private PessoaJuridicaDao pessoaJuridicaDao;
 	private ProdutorRuralDao produtorRuralDao;
+	private TelefoneDao telefoneDao;
+	private EnderecoDao enderecoDao;
 	
 	private List<ProdutorRural> listaProdutorRural;
+	private List<Telefone> listaTelefone;
 	
 	private int produtorSelecionado;
 
@@ -98,7 +110,7 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 		tbProdutor.setBackground(Color.WHITE);
         Utils.configuracaoJTable(tbProdutor);
         //"Código", "Cód. Propriedade", "Cnpj", "Razão Social", "Nome Propriedade"
-        Utils.tamanhoJTable(tbProdutor, 20, 20, 50, 200, 200);
+        Utils.tamanhoJTable(tbProdutor, 30, 40, 80, 180, 180);
         tbProdutor.getTableHeader().setFont(new Font("Dialog", Font.BOLD, 12));
         tbProdutor.setFont(new Font("Dialog", Font.BOLD, 12));
         tbProdutor.setGridColor(new Color(153,153,153));
@@ -109,14 +121,15 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 
 	private void iniacializaComponentes() {
 		
-		setBounds(100, 100, 626, 437);
+		setBounds(100, 100, 730, 500);
 		getContentPane().setLayout(null);
+		setIconifiable(true);
 		
 		tbProdutor = new JTable();
 		tbProdutor.setBounds(22, 133, 564, 183);
 		
 		JScrollPane spProdutor = new JScrollPane();
-		spProdutor.setBounds(10, 162, 590, 183);
+		spProdutor.setBounds(10, 183, 694, 236);
 		getContentPane().add(spProdutor);
 		spProdutor.setViewportView(tbProdutor);
 		
@@ -126,16 +139,18 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 				pesquisar();
 			}
 		});
-		btnPesquisar.setBounds(10, 128, 116, 23);
+		btnPesquisar.setIcon(new ImageIcon(CadastroUsuario.class.getResource("/image/lupaNo02.png")));
+		btnPesquisar.setBounds(10, 142, 135, 32);
 		getContentPane().add(btnPesquisar);
 		
 		panelBotoes = new JPanel();
-		panelBotoes.setBounds(10, 356, 590, 40);
+		panelBotoes.setBounds(10, 423, 590, 40);
 		getContentPane().add(panelBotoes);
 		panelBotoes.setLayout(null);
 		
 		JButton btnIncluir = new JButton("Incluir");
-		btnIncluir.setBounds(10, 11, 89, 23);
+		btnIncluir.setIcon(new ImageIcon(CadastroUsuario.class.getResource("/image/icLanc.png")));
+		btnIncluir.setBounds(10, 5, 135, 32);
 		panelBotoes.add(btnIncluir);
 		
 		JButton btnAlterar = new JButton("Alterar");
@@ -144,11 +159,18 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 				alterar();
 			}
 		});
-		btnAlterar.setBounds(112, 11, 89, 23);
+		btnAlterar.setBounds(155, 5, 135, 32);
+		btnAlterar.setIcon(new ImageIcon(CadastroUsuario.class.getResource("/image/icAlt.png")));
 		panelBotoes.add(btnAlterar);
 		
 		JButton btnExcluir = new JButton("Excluir");
-		btnExcluir.setBounds(211, 11, 89, 23);
+		btnExcluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				excluir();
+			}
+		});
+		btnExcluir.setBounds(300, 5, 135, 32);
+		btnExcluir.setIcon(new ImageIcon(CadastroUsuario.class.getResource("/image/icExcluir.png")));
 		panelBotoes.add(btnExcluir);
 		
 		JButton btnFechar = new JButton("Fechar");
@@ -157,78 +179,85 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 				fechar();
 			}
 		});
-		btnFechar.setBounds(310, 11, 89, 23);
+		btnFechar.setBounds(445, 5, 135, 32);
+		btnFechar.setIcon(new ImageIcon(CadastroUsuario.class.getResource("/image/icSair.png")));
 		panelBotoes.add(btnFechar);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panel.setBounds(10, 6, 694, 127);
+		getContentPane().add(panel);
+		panel.setLayout(null);
 		
 		txtCodigo = new JTextField();
 		txtCodigo.setColumns(10);
-		txtCodigo.setBounds(59, 97, 92, 20);
-		getContentPane().add(txtCodigo);
+		txtCodigo.setBounds(99, 97, 92, 20);
+		panel.add(txtCodigo);
 		
 		JLabel label = new JLabel("Nome Propriedade :");
 		label.setFont(new Font("Tahoma", Font.BOLD, 11));
-		label.setBounds(161, 100, 126, 14);
-		getContentPane().add(label);
+		label.setBounds(201, 100, 126, 14);
+		panel.add(label);
 		
 		txtNomePropriedade = new JTextField();
 		txtNomePropriedade.setColumns(10);
-		txtNomePropriedade.setBounds(276, 97, 324, 20);
-		getContentPane().add(txtNomePropriedade);
+		txtNomePropriedade.setBounds(316, 97, 324, 20);
+		panel.add(txtNomePropriedade);
 		
 		JLabel label_1 = new JLabel("C\u00F3digo :");
 		label_1.setFont(new Font("Tahoma", Font.BOLD, 11));
-		label_1.setBounds(10, 100, 52, 14);
-		getContentPane().add(label_1);
+		label_1.setBounds(50, 100, 52, 14);
+		panel.add(label_1);
 		
 		JLabel label_2 = new JLabel("Nome Fantasia :");
 		label_2.setFont(new Font("Tahoma", Font.BOLD, 11));
-		label_2.setBounds(10, 69, 92, 14);
-		getContentPane().add(label_2);
+		label_2.setBounds(50, 69, 92, 14);
+		panel.add(label_2);
 		
 		txtNomeFantasia = new JTextField();
 		txtNomeFantasia.setColumns(10);
-		txtNomeFantasia.setBounds(102, 66, 498, 20);
-		getContentPane().add(txtNomeFantasia);
+		txtNomeFantasia.setBounds(142, 66, 498, 20);
+		panel.add(txtNomeFantasia);
 		
 		txtRazaoSocial = new JTextField();
 		txtRazaoSocial.setColumns(10);
-		txtRazaoSocial.setBounds(102, 38, 498, 20);
-		getContentPane().add(txtRazaoSocial);
+		txtRazaoSocial.setBounds(142, 38, 498, 20);
+		panel.add(txtRazaoSocial);
 		
 		JLabel label_3 = new JLabel("Raz\u00E3o Social :");
 		label_3.setFont(new Font("Tahoma", Font.BOLD, 11));
-		label_3.setBounds(10, 40, 92, 14);
-		getContentPane().add(label_3);
+		label_3.setBounds(50, 40, 92, 14);
+		panel.add(label_3);
 		
 		JLabel label_4 = new JLabel("CNPJ :");
 		label_4.setFont(new Font("Tahoma", Font.BOLD, 11));
-		label_4.setBounds(10, 14, 40, 14);
-		getContentPane().add(label_4);
+		label_4.setBounds(50, 14, 40, 14);
+		panel.add(label_4);
 		
 		txtCnpj = new JTextField();
 		txtCnpj.setColumns(10);
-		txtCnpj.setBounds(60, 11, 140, 20);
-		getContentPane().add(txtCnpj);
+		txtCnpj.setBounds(100, 11, 140, 20);
+		panel.add(txtCnpj);
 		
 		JLabel label_5 = new JLabel("IE :");
 		label_5.setFont(new Font("Tahoma", Font.BOLD, 11));
-		label_5.setBounds(210, 14, 26, 14);
-		getContentPane().add(label_5);
+		label_5.setBounds(250, 14, 26, 14);
+		panel.add(label_5);
 		
 		txtInscricaoEstadual = new JTextField();
 		txtInscricaoEstadual.setColumns(10);
-		txtInscricaoEstadual.setBounds(241, 11, 126, 20);
-		getContentPane().add(txtInscricaoEstadual);
+		txtInscricaoEstadual.setBounds(281, 11, 126, 20);
+		panel.add(txtInscricaoEstadual);
 		
 		JLabel label_6 = new JLabel("C\u00F3digo Propriedade :");
 		label_6.setFont(new Font("Tahoma", Font.BOLD, 11));
-		label_6.setBounds(377, 14, 116, 14);
-		getContentPane().add(label_6);
+		label_6.setBounds(417, 14, 116, 14);
+		panel.add(label_6);
 		
 		txtCodigoPropriedade = new JTextField();
 		txtCodigoPropriedade.setColumns(10);
-		txtCodigoPropriedade.setBounds(499, 11, 101, 20);
-		getContentPane().add(txtCodigoPropriedade);
+		txtCodigoPropriedade.setBounds(539, 11, 101, 20);
+		panel.add(txtCodigoPropriedade);
 		btnIncluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				incluir();
@@ -311,6 +340,26 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 		}
 	}
 	
+	private void excluir() {
+		if(produtorSelecionado >= 0){
+			boolean isExcluso = true;
+			int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir?", "Produtor Rural", JOptionPane.YES_NO_OPTION);
+			if (resposta == JOptionPane.YES_OPTION) {
+				try {
+					getProdutorRuralDao().excluir(getProdutorRural().getId());
+				} catch (Excecoes e) {
+					isExcluso = false;
+					Mensagem.erro("Não foi possível exclir o Produtor Rural!");
+				}
+				if(isExcluso)
+					((TMlistaProdutorRural) tbProdutor.getModel()).excluir(produtorSelecionado);
+			}
+		}
+		
+	}
+	
+	//gets e sets
+	
 	public PessoaJuridica getPessoaJuridica() {
 		if(pessoaJuridica == null){
 			pessoaJuridica = new PessoaJuridica();
@@ -367,5 +416,52 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	
 	public List<ProdutorRural> setListaProdutorRural(List<ProdutorRural> listaProdutorRural){
 		return this.listaProdutorRural = listaProdutorRural;
+	}
+	
+	public TelefoneDao getTelefoneDao() {
+		if(telefoneDao == null){
+			telefoneDao = new TelefoneDao();
+			setTelefoneDao(new TelefoneDao());
+		}
+		return telefoneDao;
+	}
+	
+	public void setTelefoneDao(TelefoneDao telefoneDao) {
+		this.telefoneDao = telefoneDao;
+	}
+	
+	public List<Telefone> getListaTelefone(){
+		if(listaTelefone == null){
+			listaTelefone = new ArrayList<Telefone>();
+		}
+		return listaTelefone;
+	}
+	
+	public List<Telefone> setListaTelefone(List<Telefone> listaTelefone){
+		return this.listaTelefone = listaTelefone;
+	}
+	
+	public EnderecoDao getEnderecoDao() {
+		if(enderecoDao == null){
+			enderecoDao = new EnderecoDao();
+			setEnderecoDao(new EnderecoDao());
+		}
+		return enderecoDao;
+	}
+	
+	public void setEnderecoDao(EnderecoDao enderecoDao) {
+		this.enderecoDao = enderecoDao;
+	}
+	
+	public Endereco getEndereco() {
+		if(endereco == null){
+			endereco = new Endereco();
+			setEndereco(new Endereco());
+		}
+		return endereco;
+	}
+	
+	public void setEndereco(Endereco endereco) {
+		this.endereco = endereco;
 	}
 }

@@ -14,6 +14,8 @@ import javax.swing.ImageIcon;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.InputMap;
 
@@ -25,6 +27,7 @@ import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 
 import br.com.classes.Cliente;
+import br.com.entity.ProdutorRural;
 import br.com.util.AN;
 
 import javax.swing.JTextField;
@@ -65,13 +68,18 @@ public class F9Cliente extends JDialog {
 	private JButton jButton = null;
 	JButton btnGravar = null;
 	private JButton btnCarregar;
+	
+	private static List<ProdutorRural> listaProdutorRural;
+	
 	/**
 	 * @param owner
 	 * @param tela 
 	 */
 	String tela = "";
-	public F9Cliente(Frame owner, String desc, String tela) {
+	public F9Cliente(Frame owner, String desc, String tela, List<ProdutorRural> listaProdutorRural) {
 		super(owner);
+		
+		setListaProdutorRural(listaProdutorRural);
 		
 		initialize();
 		if(!desc.equals("")){
@@ -220,7 +228,7 @@ public class F9Cliente extends JDialog {
 		String sql1 = "";
 		String sql2 = "";
 		limparTable();
-		
+			/*
 			String text = jTextField.getText();
 			int codigo = 0;
 			try{codigo = AN.stringPInt(text);}catch(Exception e){}
@@ -246,16 +254,23 @@ public class F9Cliente extends JDialog {
 						+ " where pr.cliente_contabilidade='S' and pj.razao_social like '%"+text+"%'";
 				dados = c.buscarPassandoMatrizCad(sql1, sql2);
 			}
+			
 			if(dados != null){
 				for(int i=0; i<dados.length; i++){
 					modelo.addRow(new Object[] {dados[i][0], dados[i][1]});
 				}
+			}
+			else{
+				modelo.addRow(new Object[] {"","Nenhum Cliente Encontrado!!!"});
+			}
+			*/
+			if(getListaProdutorRural().size() > 0){
+				for(ProdutorRural produtor : getListaProdutorRural()){
+					modelo.addRow(new Object[] {produtor.getCodigo(), produtor.getPessoaJuridica().getRazaoSocial()});
+				}
 			}else{
 				modelo.addRow(new Object[] {"","Nenhum Cliente Encontrado!!!"});
 			}
-		
-		
-		
 	}
 	//
 	public static void limparTable(){
@@ -439,6 +454,17 @@ public class F9Cliente extends JDialog {
 			}catch(Exception e){}
 		}
 		
+	}
+	
+	public List<ProdutorRural> setListaProdutorRural(List<ProdutorRural> listaProdutorRural){
+		return this.listaProdutorRural = listaProdutorRural;
+	}
+	
+	public static List<ProdutorRural> getListaProdutorRural(){
+		if(listaProdutorRural == null){
+			listaProdutorRural = new ArrayList<ProdutorRural>();
+		}
+		return listaProdutorRural;
 	}
 	
 }

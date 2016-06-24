@@ -14,7 +14,7 @@ public class TMlistaProdutorRural extends DMGAbstractTableModel<ProdutorRural>{
     private static final int NOME_PROPRIEDADE =4;
     
     public TMlistaProdutorRural() {
-		super(new String[] {"Código", "Cód. Propriedade", "Cnpj", "Razão Social", "Nome Propriedade"});
+		super(new String[] {"Código", "Cód. Prop.", "Cnpj", "Razão Social", "Nome Propriedade"});
 	}
     
     @Override

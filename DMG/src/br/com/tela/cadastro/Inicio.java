@@ -375,7 +375,7 @@ public class Inicio extends JFrame {
 	F9Cliente f9Cliente = null;
 	public void f9Cliente(String txt){
 		try {
-			f9Cliente = new F9Cliente(null, txt, "Inicio");
+			f9Cliente = new F9Cliente(null, txt, "Inicio", getListaProdutorRural());
 			f9Cliente.setVisible(true);
 			f9Cliente.setModal(true);
 

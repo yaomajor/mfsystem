@@ -1,5 +1,7 @@
 package br.com.persistencia;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,5 +151,49 @@ public class ProdutorRuralDao extends Dao<ProdutorRural>{
 			Conexao.fechaConexaoEM(em);
 		}
 		return retorno;
+	}
+	
+	public ProdutorRural getProdutoRuralPorCodigo(String codigo) throws Excecoes {
+		ProdutorRural retorno = new ProdutorRural();
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT produtor FROM ProdutorRural produtor ")
+		.append(" WHERE produtor.codigo = (:codigo)");
+		
+		EntityManager em = Conexao.getConexaoEM();
+		try {
+			
+			Query query = em.createQuery(sql.toString());
+			query.setParameter("codigo", codigo);
+			
+			retorno = (ProdutorRural) query.getSingleResult();
+			
+		} catch (NoResultException e) {
+			return null;
+		} catch(Exception e) {
+			throw new Excecoes(e, "pesquisarErro");
+		} finally {
+			Conexao.fechaConexaoEM(em);
+		}
+		return retorno;
+	}
+	
+	public BigInteger getProdutorRuralProximoId() throws Excecoes {
+            
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT AUTO_INCREMENT ")
+        .append("FROM information_schema.tables ")
+        .append("WHERE table_name='produtor_rural' ")
+            .append("AND table_schema = DATABASE() ");
+        
+        EntityManager em = Conexao.getConexaoEM();
+        try {
+            return (BigInteger) em.createNativeQuery(sql.toString())
+                    .getSingleResult();
+        } catch (Exception e) {
+            throw new Excecoes(e, "Erro ao Buscar getProdutorRuralProximoID");
+        }finally {
+            Conexao.fechaConexaoEM(em);
+        }
+	    
 	}
 }

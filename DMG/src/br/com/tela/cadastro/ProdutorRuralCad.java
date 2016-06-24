@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JPanel;
@@ -28,6 +30,7 @@ import br.com.exception.Excecoes;
 import br.com.persistencia.CidadesDao;
 import br.com.persistencia.EnderecoDao;
 import br.com.persistencia.PessoaDao;
+import br.com.persistencia.PessoaJuridicaDao;
 import br.com.persistencia.ProdutorRuralDao;
 import br.com.persistencia.TelefoneDao;
 import br.com.persistencia.UfDao;
@@ -52,6 +55,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -75,6 +79,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 	private JButton btnAlterarTelefone;
 	private JButton btnCancelarTelefone;
 	private JButton btnIncluirTelefone;
+	private JButton btnExcluirTelefone;
 	
 	private JComboBox cbClienteContabilidade;
 	private JComboBox cbDddTelefone;
@@ -93,6 +98,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 	private ProdutorRuralDao produtorRuralDao;
 	private UfDao ufDao;
 	private CidadesDao cidadesDao;
+	private PessoaJuridicaDao pessoaJuridicaDao;
 	
 	boolean isAlterando = false;
 	
@@ -143,20 +149,28 @@ public class ProdutorRuralCad extends JInternalFrame {
 	private void populaDados() {
 		((TMlistaTelefone) tbTelefone.getModel()).limpar();
 		try {
-			setEndereco(getEnderecoDao().getEnderecoPorPessoa(getProdutorRural().getPessoaJuridica().getPessoa()));
+			if(getProdutorRural() != null && getProdutorRural().getId() != null){
+				setEndereco(getEnderecoDao().getEnderecoPorPessoa(getProdutorRural().getPessoaJuridica().getPessoa()));
+			}else{
+				setEndereco(getEnderecoDao().getEnderecoPorPessoa(getPessoaJuridica().getPessoa()));
+			}
 		} catch (Excecoes e) {
 			Mensagem.erro("Erro ao buscar endereço!");
 		}
-		setPessoaJuridica(getProdutorRural().getPessoaJuridica());
+		
+		if(getProdutorRural() != null && getProdutorRural().getId() != null){
+			setPessoaJuridica(getProdutorRural().getPessoaJuridica());
+		}
+		
 		setPessoa(getEndereco().getPessoa());
 		
-		if(getProdutorRural().getPessoaJuridica().getPessoa().getDataCadastro() != null){
+		if(getProdutorRural() != null && getProdutorRural().getId() != null && getProdutorRural().getPessoaJuridica().getPessoa().getDataCadastro() != null){
 			SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             String data = sdf.format(getProdutorRural().getPessoaJuridica().getPessoa().getDataCadastro().getTime());
 			txtDataCadastro.setText(data);
 		}
 		
-		if(getProdutorRural().getClienteContalidade() != null){
+		if(getProdutorRural() != null && getProdutorRural().getId() != null && getProdutorRural().getClienteContalidade() != null){
 			if(getProdutorRural().getClienteContalidade().equals("S")){
 				cbClienteContabilidade.setSelectedIndex(0);
 			}else{
@@ -164,37 +178,41 @@ public class ProdutorRuralCad extends JInternalFrame {
 			}
 		}
 		
-		if(getProdutorRural().getCodigo() != null){
-			txtCodigo.setText(getProdutorRural().getCodigo());
+		if(getProdutorRural() != null && getProdutorRural().getId() != null){
+			if(getProdutorRural().getCodigo() != null){
+				txtCodigo.setText(getProdutorRural().getCodigo());
+			}
+			
+			if(getProdutorRural().getCodigoPropriedade() != null){
+				txtCodigoPropriedade.setText(getProdutorRural().getCodigoPropriedade());
+			}
+			
+			if(getProdutorRural().getNomePropriedade() != null){
+				txtNomePropriedade.setText(getProdutorRural().getNomePropriedade());
+			}
 		}
 		
-		if(getProdutorRural().getCodigoPropriedade() != null){
-			txtCodigoPropriedade.setText(getProdutorRural().getCodigoPropriedade());
+		if(getPessoaJuridica().getCnpj() != null){
+			txtCnpj.setText(getPessoaJuridica().getCnpj());
 		}
 		
-		if(getProdutorRural().getNomePropriedade() != null){
-			txtNomePropriedade.setText(getProdutorRural().getNomePropriedade());
+		if(getPessoaJuridica().getInscricaoEstadual() != null){
+			txtInscricaoEstadual.setText(getPessoaJuridica().getInscricaoEstadual());
 		}
 		
-		if(getProdutorRural().getPessoaJuridica().getCnpj() != null){
-			txtCnpj.setText(getProdutorRural().getPessoaJuridica().getCnpj());
+		if(getPessoaJuridica().getRazaoSocial() != null){
+			txtRazaoSocial.setText(getPessoaJuridica().getRazaoSocial());
 		}
 		
-		if(getProdutorRural().getPessoaJuridica().getInscricaoEstadual() != null){
-			txtInscricaoEstadual.setText(getProdutorRural().getPessoaJuridica().getInscricaoEstadual());
+		if(getPessoaJuridica().getNomeFantasia() != null){
+			txtNomeFantasia.setText(getPessoaJuridica().getNomeFantasia());
 		}
 		
-		if(getProdutorRural().getPessoaJuridica().getRazaoSocial() != null){
-			txtRazaoSocial.setText(getProdutorRural().getPessoaJuridica().getRazaoSocial());
-		}
-		
-		if(getProdutorRural().getPessoaJuridica().getNomeFantasia() != null){
-			txtNomeFantasia.setText(getProdutorRural().getPessoaJuridica().getNomeFantasia());
-		}
 		
 		// telefone
 		try {
-			setListaTelefone(getTelefoneDao().getTelefonePorPessoa(getProdutorRural().getPessoaJuridica().getPessoa()));
+			setListaTelefone(getTelefoneDao().getTelefonePorPessoa(getPessoa()));
+			
 		} catch (Excecoes e) {
 			Mensagem.erro("Erro ao buscar telefone!");
 		}
@@ -262,23 +280,43 @@ public class ProdutorRuralCad extends JInternalFrame {
 	private void eventos() {
 		txtCnpj.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
-            	try {
-					if(txtCnpj.getText() != null){
-						getPessoaJuridica().setCnpj(Utils.formataCpfCnpj(txtCnpj.getText().replaceAll("\\D", "")));
+				if(txtCnpj.getText() != null){
+					getPessoaJuridica().setCnpj(Utils.formataCpfCnpj(txtCnpj.getText().replaceAll("\\D", "")));
+					try {
 						setProdutorRural(getProdutorRuralDao().getProdutoRural(getPessoaJuridica()));
-						if(getProdutorRural() != null && getProdutorRural().getId() != null){
-							populaDados();
+					} catch (Excecoes e1) {
+						Mensagem.erro("Erro ao buscar produtor rural!");
+					}
+					
+					if(getProdutorRural().getId() == null){
+						try {
+							setPessoaJuridica(getPessoaJuridicaDao().getPessoaJuridica(getPessoaJuridica()));
+						} catch (Excecoes e1) {
+							Mensagem.erro("Erro ao buscar Pessoa Juridica!");
 						}
 					}
-				} catch (Excecoes e1) {
-					Mensagem.erro("Erro ao buscar produtor rural!");
+					
+					if((getProdutorRural() != null && getProdutorRural().getId() != null) || 
+							(getPessoaJuridica() != null && getPessoaJuridica().getId() != null) ){
+						populaDados();
+					}
 				}
             }
         });
 		
 		txtCodigo.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
-            	//verificar se ja tem produtor com este codigo, se não for preenchido, colocar ID
+            	try {
+					if(txtCodigo.getText() != null){
+						setProdutorRural(getProdutorRuralDao().getProdutoRuralPorCodigo(txtCodigo.getText()));
+						if(getProdutorRural() != null && getProdutorRural().getId() != null){
+							Mensagem.informacao("Codigo : " + getProdutorRural().getCodigo()  
+									+ " esta sendo utilizando pela " + getProdutorRural().getPessoaJuridica().getRazaoSocial());
+						}
+					}
+				} catch (Excecoes e1) {
+					Mensagem.erro("Erro ao buscar produtor rural!");
+				}
             }
         });
 		
@@ -300,7 +338,13 @@ public class ProdutorRuralCad extends JInternalFrame {
             		btnAlterarTelefone.setEnabled(false);
                     btnCancelarTelefone.setEnabled(true);
                     btnIncluirTelefone.setEnabled(true);
-                    cbDddTelefone.setSelectedIndex(0);// ajustar
+                    if(telefone.getDdd() != null){
+            			for (int i = 0; i < cbDddTelefone.getItemCount(); i++) {
+            				if (cbDddTelefone.getItemAt(i).equals(telefone.getDdd())) {
+            					cbDddTelefone.setSelectedIndex(i);
+            				}
+            			}
+            		}
         			txtTelefone.setText(telefone.getNumero());
         			txtContatoTel.setText(telefone.getContato());
             	}
@@ -354,6 +398,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 	private void iniacializaComponentes() {
 		setBounds(100, 100, 630, 598);
 		getContentPane().setLayout(null);
+		setIconifiable(true);
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -367,19 +412,19 @@ public class ProdutorRuralCad extends JInternalFrame {
 		panel.add(lblTelefone);
 		
 		cbDddTelefone = new JComboBox();
-		cbDddTelefone.setModel(new DefaultComboBoxModel(new String[] {"17"}));
-		cbDddTelefone.setBounds(74, 8, 39, 20);
+		cbDddTelefone.setModel(new DefaultComboBoxModel(Utils.retDDDs()));
+		cbDddTelefone.setBounds(74, 8, 45, 20);
 		panel.add(cbDddTelefone);
 		
 		txtTelefone = new JTextTel();
 		txtTelefone.setDocument(new TextFieldLimit(20, false));
-		txtTelefone.setBounds(123, 8, 110, 20);
+		txtTelefone.setBounds(125, 8, 110, 20);
 		panel.add(txtTelefone);
 		txtTelefone.setColumns(10);
 		
 		JLabel lblContato = new JLabel("Contato :");
 		lblContato.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblContato.setBounds(243, 11, 64, 14);
+		lblContato.setBounds(245, 11, 62, 14);
 		panel.add(lblContato);
 		
 		txtContatoTel = new JTextFieldFocu();
@@ -389,37 +434,50 @@ public class ProdutorRuralCad extends JInternalFrame {
 		panel.add(txtContatoTel);
 		
 		JScrollPane spTelefone = new JScrollPane();
-		spTelefone.setBounds(10, 70, 570, 107);
+		spTelefone.setBounds(10, 75, 570, 107);
 		panel.add(spTelefone);
 		
 		tbTelefone = new JTable();
 		spTelefone.setColumnHeaderView(tbTelefone);
 		
 		btnIncluirTelefone = new JButton("Incluir Telefone");
+		btnIncluirTelefone.setIcon(new ImageIcon(CadastroUsuario.class.getResource("/image/icLanc.png")));
 		btnIncluirTelefone.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				incluirTelefone();
 			}
 		});
-		btnIncluirTelefone.setBounds(10, 36, 133, 23);
+		btnIncluirTelefone.setBounds(10, 36, 135, 32);
 		panel.add(btnIncluirTelefone);
 		
 		btnAlterarTelefone = new JButton("Alterar Telefone");
+		btnAlterarTelefone.setIcon(new ImageIcon(CadastroUsuario.class.getResource("/image/icAlt.png")));
 		btnAlterarTelefone.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				alterarTelefone();
 			}
 		});
-		btnAlterarTelefone.setBounds(153, 36, 127, 23);
+		btnAlterarTelefone.setBounds(153, 36, 135, 32);
 		panel.add(btnAlterarTelefone);
 		
+		JButton btnExcluirTelefone = new JButton("Excluir");
+		btnExcluirTelefone.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				excluirTelefone();
+			}
+		});
+		btnExcluirTelefone.setIcon(new ImageIcon(CadastroUsuario.class.getResource("/image/icExcluir.png")));
+		btnExcluirTelefone.setBounds(443, 36, 135, 32);
+		panel.add(btnExcluirTelefone);
+		
 		btnCancelarTelefone = new JButton("Cancelar");
+		btnCancelarTelefone.setIcon(new ImageIcon(CadastroUsuario.class.getResource("/image/icCancelar.png")));
 		btnCancelarTelefone.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cancelarDadosTelefone();
 			}
 		});
-		btnCancelarTelefone.setBounds(290, 36, 89, 23);
+		btnCancelarTelefone.setBounds(298, 36, 135, 32);
 		panel.add(btnCancelarTelefone);
 		
 		txtNomePropriedade = new JTextFieldFocu();
@@ -462,7 +520,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 		getContentPane().add(label_3);
 		
 		txtInscricaoEstadual = new JTextFieldFocu();
-		txtInscricaoEstadual.setDocument(new TextFieldLimit(20, true));
+		txtInscricaoEstadual.setDocument(new TextFieldLimit(20, false));
 		txtInscricaoEstadual.setColumns(10);
 		txtInscricaoEstadual.setBounds(241, 11, 126, 20);
 		getContentPane().add(txtInscricaoEstadual);
@@ -491,25 +549,27 @@ public class ProdutorRuralCad extends JInternalFrame {
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setLayout(null);
-		panel_1.setBounds(10, 522, 590, 38);
+		panel_1.setBounds(10, 518, 590, 38);
 		getContentPane().add(panel_1);
 		
 		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar.setIcon(new ImageIcon(LancNota.class.getResource("/image/icSalvar2.png")));
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				salvar();
 			}
 		});
-		btnSalvar.setBounds(10, 11, 89, 23);
+		btnSalvar.setBounds(10, 3, 135, 32);
 		panel_1.add(btnSalvar);
 		
 		JButton btnFechar = new JButton("Fechar");
+		btnFechar.setIcon(new ImageIcon(CadastroUsuario.class.getResource("/image/icSair.png")));
 		btnFechar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				fechar();
 			}
 		});
-		btnFechar.setBounds(119, 11, 89, 23);
+		btnFechar.setBounds(155, 3, 135, 32);
 		panel_1.add(btnFechar);
 		
 		JLabel label_5 = new JLabel("Raz\u00E3o Social :");
@@ -635,13 +695,13 @@ public class ProdutorRuralCad extends JInternalFrame {
 		cbClienteContabilidade.setSelectedIndex(0);
 		txtCodigo.setText("1");
 		txtCodigoPropriedade.setText("123");
-		txtNomePropriedade.setText("Fazenda Esperanca");
+		txtNomePropriedade.setText("Fazenda Alvorada");
 		
 		//getPessoaJuridica
-		txtCnpj.setText("12.011.650/0001-11");
+		txtCnpj.setText("92.502.421/0001-39");
 		txtInscricaoEstadual.setText("ISENTO");
-		txtRazaoSocial.setText("CHIQUINHO SORVETES RIO PRETO LTDA");
-		txtNomeFantasia.setText("CHIQUINHO SORVETES");
+		txtRazaoSocial.setText("TESTE LTDA");
+		txtNomeFantasia.setText("TESTE");
 		
 		//setListaTelefone
 		txtTelefone.setText("9782-9266");
@@ -698,7 +758,17 @@ public class ProdutorRuralCad extends JInternalFrame {
 			}else{
 				getProdutorRural().setClienteContalidade("N");
 			}
-			getProdutorRural().setCodigo(txtCodigo.getText());
+			
+			if(StringUtils.isBlank(txtCodigo.getText())){
+				try {
+					getProdutorRural().setCodigo(getProdutorRuralDao().getProdutorRuralProximoId().toString());
+				} catch (Excecoes e) {
+					Mensagem.erro("Não foi possível obter ultimo ID do Produtor Rural!");
+				}
+			}else{
+				getProdutorRural().setCodigo(txtCodigo.getText());
+			}
+			
 			getProdutorRural().setCodigoPropriedade(txtCodigoPropriedade.getText().replaceAll("\\D", ""));
 			getProdutorRural().setNomePropriedade(txtNomePropriedade.getText());
 			
@@ -791,7 +861,13 @@ public class ProdutorRuralCad extends JInternalFrame {
 	
 	private void alterarTelefone() {
 		if(telefoneSelecionado >= 0){
-			cbDddTelefone.setSelectedIndex(0);// ajustar
+			if(telefone.getDdd() != null){
+    			for (int i = 0; i < cbDddTelefone.getItemCount(); i++) {
+    				if (cbDddTelefone.getItemAt(i).equals(telefone.getDdd())) {
+    					cbDddTelefone.setSelectedIndex(i);
+    				}
+    			}
+    		}
 			txtTelefone.setText(telefone.getNumero());
 			txtContatoTel.setText(telefone.getContato());
 			btnAlterarTelefone.setEnabled(false);
@@ -800,6 +876,24 @@ public class ProdutorRuralCad extends JInternalFrame {
 			isAlterando = true;
 		}else{
 			Mensagem.informacao("Nenhum telefone foi selecionado");
+		}
+	}
+	
+	private void excluirTelefone() {
+		if(telefoneSelecionado >= 0){
+			boolean isExcluso = true; 
+			int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir?", "Telefone", JOptionPane.YES_NO_OPTION);
+			if (resposta == JOptionPane.YES_OPTION) {
+				setTelefone(((TMlistaTelefone) tbTelefone.getModel()).getObj(telefoneSelecionado));
+				try {
+					getTelefoneDao().excluir(getTelefone().getId());
+				} catch (Excecoes e) {
+					isExcluso = false;
+					Mensagem.erro("Não foi possível exclir o telefone!");
+				}
+				if(isExcluso)
+					((TMlistaTelefone) tbTelefone.getModel()).excluir(telefoneSelecionado);
+			}
 		}
 	}
 
@@ -964,5 +1058,16 @@ public class ProdutorRuralCad extends JInternalFrame {
 	
 	public List<Cidades> setListaCidades(List<Cidades> listaCidades){
 		return this.listaCidades = listaCidades;
+	}
+	
+	public PessoaJuridicaDao getPessoaJuridicaDao() {
+		if(pessoaJuridicaDao == null){
+			pessoaJuridicaDao = new PessoaJuridicaDao();
+		}
+		return pessoaJuridicaDao;
+	}
+	
+	public void setPessoaJuridicaDao(PessoaJuridicaDao pessoaJuridicaDao) {
+		this.pessoaJuridicaDao = pessoaJuridicaDao;
 	}
 }

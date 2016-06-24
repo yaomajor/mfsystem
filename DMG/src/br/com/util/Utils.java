@@ -359,4 +359,14 @@ public class Utils {
             tabela.getColumnModel().getColumn(i).setPreferredWidth(tamanho[i]);
         }
     }
+    
+    public static String[] retDDDs() {
+	  String[] ret = new String[89];
+	  int j = 0;
+	  for (int i = 11; i < 100; i++) {
+	   ret[j] = String.valueOf(i);
+	   j++;
+	  }
+	  return ret;
+	 }
 }
