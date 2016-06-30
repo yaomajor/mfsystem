@@ -158,7 +158,7 @@ public class MovNotaFiscal extends JInternalFrame {
 		getContentPane().add(lblTipo);
 		
 		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"", "Entrada", "Sa\u00EDda"}));
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"", "ENTRADA", "SAÍDA"}));
 		comboBox.setBounds(72, 36, 115, 21);
 		getContentPane().add(comboBox);
 
@@ -166,7 +166,7 @@ public class MovNotaFiscal extends JInternalFrame {
 	static LancNota lancNota = null;
 	
 	public void lancar(){
-		lancNota = new LancNota();
+		lancNota = new LancNota("Incluir");
 		Inicio.addTela(lancNota);
 		lancNota.setVisible(true);
 		try{

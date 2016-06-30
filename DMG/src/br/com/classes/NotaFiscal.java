@@ -1,6 +1,20 @@
 package br.com.classes;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import br.com.util.AN;
+import br.com.util.Conexao;
+
 public class NotaFiscal {
+	public static Connection oConn = null;
+	public static PreparedStatement stmtP = null;
+	public static Statement stmt = null;
+	public static ResultSet rs = null;
+
+	
 	private int notaFiscalId = 0;
 	private int codCli = 0;
 	private int numero = 0;
@@ -80,6 +94,25 @@ public class NotaFiscal {
 	}
 	
 	//
-	
+	public boolean numeroNotaJaAdd(int nf, int clienteId, int compVendId) {
+		boolean ret = false;	
+		try {
+			oConn = (Connection) Conexao.abrirConexao();
+			stmt = (Statement) oConn.createStatement();
+			rs = (ResultSet) stmt.executeQuery("SELECT numero FROM nota_fiscal where numero="+nf+" "
+					+ "and cliente_id="+clienteId+" and comp_vend_id="+compVendId);			
+			if(rs.next()) {
+				ret = true;
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();			
+		}finally{
+			Conexao.fecharConexao();
+			try{rs.close();}catch(Exception e){}
+			try{oConn.close();}catch(Exception e){}
+			try{stmt.close();}catch(Exception e){}
+		}
+		return ret;
+	}
 	
 }

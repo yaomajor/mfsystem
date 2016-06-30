@@ -442,7 +442,29 @@ public class F9Cliente extends JDialog {
 					}												
 					dispose();				
 				}catch(Exception e){}
-			}	
+			}else if(tela.equals("LancNotaVend")){
+				try{
+					String txt = jTable.getValueAt(linhaTit, 0).toString()+" - "+jTable.getValueAt(linhaTit, 1).toString();
+					if(cod>0){
+						LancNota.textVend.setText(txt);							
+					}else{
+						LancNota.textVend.setText("");						
+					}					
+					LancNota.textVend.requestFocus();
+					dispose();				
+				}catch(Exception e){}
+			}else if(tela.equals("LancNotaComp")){
+				try{
+					String txt = jTable.getValueAt(linhaTit, 0).toString()+" - "+jTable.getValueAt(linhaTit, 1).toString();
+					if(cod>0){
+						LancNota.textComp.setText(txt);							
+					}else{
+						LancNota.textComp.setText("");						
+					}					
+					LancNota.textComp.requestFocus();
+					dispose();				
+				}catch(Exception e){}
+			}			
 		
 		
 		
@@ -450,6 +472,18 @@ public class F9Cliente extends JDialog {
 	public void fechar(){		
 		if(tela.equals("Inicio")){
 			try{
+				dispose();				
+			}catch(Exception e){}
+		}else if(tela.equals("LancNotaVend")){
+			try{
+				MovNotaFiscal.lancNota.setSelected(true);
+				LancNota.textVend.requestFocus();
+				dispose();				
+			}catch(Exception e){}
+		}else if(tela.equals("LancNotaComp")){
+			try{
+				MovNotaFiscal.lancNota.setSelected(true);
+				LancNota.textComp.requestFocus();
 				dispose();				
 			}catch(Exception e){}
 		}
