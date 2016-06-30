@@ -638,7 +638,7 @@ public class LancNota extends JInternalFrame {
 	
 	public void f9Vendedor(String txt) {
 		try {
-			f9Cliente = new F9Cliente(null, txt, "LancNotaVend",null);
+			f9Cliente = new F9Cliente(null, txt, "LancNotaVend");
 			f9Cliente.setVisible(true);
 			f9Cliente.setModal(true);
 
@@ -649,7 +649,7 @@ public class LancNota extends JInternalFrame {
 	//
 	public void f9Comprador(String txt) {
 		try {
-			f9Cliente = new F9Cliente(null, txt, "LancNotaComp",null);
+			f9Cliente = new F9Cliente(null, txt, "LancNotaComp");
 			f9Cliente.setVisible(true);
 			f9Cliente.setModal(true);
 

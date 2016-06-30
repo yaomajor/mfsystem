@@ -272,6 +272,7 @@ public class Inicio extends JFrame {
 		
 		try {
 			setListaProdutorRural(getProdutorRuralDao().getListaProdutoRuralContabilidade());
+			System.out.println("getProdutorRuralDao().getTodos(nomePropriedade) : " + getProdutorRuralDao().getTodos("nomePropriedade").size());
 		} catch (Excecoes e1) {
 			Mensagem.erro("Erro ao buscar produtor rural cliente contabil!");
 		}
@@ -372,10 +373,11 @@ public class Inicio extends JFrame {
 	public void setProdutorRuralDao(ProdutorRuralDao produtorRuralDao) {
 		this.produtorRuralDao = produtorRuralDao;
 	}
+	
 	F9Cliente f9Cliente = null;
 	public void f9Cliente(String txt){
 		try {
-			f9Cliente = new F9Cliente(null, txt, "Inicio", getListaProdutorRural());
+			f9Cliente = new F9Cliente(null, txt, "Inicio");
 			f9Cliente.setVisible(true);
 			f9Cliente.setModal(true);
 
