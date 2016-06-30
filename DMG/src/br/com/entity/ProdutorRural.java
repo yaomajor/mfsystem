@@ -41,8 +41,7 @@ public class ProdutorRural implements Serializable{
 	@Column(name = "JVERSION")
 	private Long jversion;
 	
-	@NotNull
-	@Size(min = 1, max = 20)
+	@Size(min = 0, max = 20)
 	@Column(name = "CODIGO")
 	private String codigo;
 	

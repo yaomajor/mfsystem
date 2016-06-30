@@ -299,6 +299,10 @@ public class ProdutorRuralCad extends JInternalFrame {
 					if((getProdutorRural() != null && getProdutorRural().getId() != null) || 
 							(getPessoaJuridica() != null && getPessoaJuridica().getId() != null) ){
 						populaDados();
+					}else{
+						if(!Utils.isCNPJ(txtCnpj.getText().replaceAll("\\D", ""))){
+							Mensagem.aviso("CNPJ não é valido!");
+						}
 					}
 				}
             }
@@ -307,7 +311,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 		txtCodigo.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
             	try {
-					if(txtCodigo.getText() != null){
+        			if(getProdutorRural().getId() == null && txtCodigo.getText() != null){
 						setProdutorRural(getProdutorRuralDao().getProdutoRuralPorCodigo(txtCodigo.getText()));
 						if(getProdutorRural() != null && getProdutorRural().getId() != null){
 							Mensagem.informacao("Codigo : " + getProdutorRural().getCodigo()  
@@ -741,6 +745,9 @@ public class ProdutorRuralCad extends JInternalFrame {
 		this.dispose();
 		Inicio.limparTela(ProdutorRuralConsulta.produtorRuralCad);
 		ProdutorRuralConsulta.produtorRuralCad=null;
+		setProdutorRural(new ProdutorRural());
+		setPessoaJuridica(new PessoaJuridica());
+		setPessoa(new Pessoa());
 		try {
 			ProdutorRuralConsulta.setPanelBotoes(true);
 			Inicio.produtorRuralConsulta.setSelected(true);
@@ -759,15 +766,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 				getProdutorRural().setClienteContalidade("N");
 			}
 			
-			if(StringUtils.isBlank(txtCodigo.getText())){
-				try {
-					getProdutorRural().setCodigo(getProdutorRuralDao().getProdutorRuralProximoId().toString());
-				} catch (Excecoes e) {
-					Mensagem.erro("Não foi possível obter ultimo ID do Produtor Rural!");
-				}
-			}else{
-				getProdutorRural().setCodigo(txtCodigo.getText());
-			}
+			
+		    getProdutorRural().setCodigo(txtCodigo.getText());
 			
 			getProdutorRural().setCodigoPropriedade(txtCodigoPropriedade.getText().replaceAll("\\D", ""));
 			getProdutorRural().setNomePropriedade(txtNomePropriedade.getText());

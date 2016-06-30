@@ -1,5 +1,7 @@
 package br.com.tablemodel;
 
+import org.apache.commons.lang.StringUtils;
+
 import br.com.entity.ProdutorRural;
 
 public class TMlistaProdutorRural extends DMGAbstractTableModel<ProdutorRural>{
@@ -40,7 +42,11 @@ public class TMlistaProdutorRural extends DMGAbstractTableModel<ProdutorRural>{
 		ProdutorRural obj = linhas.get(rowIndex);
         switch (columnIndex) {
             case CODIGO:
-                return obj.getCodigo();
+            	String codigo = "";
+            	if(StringUtils.isNotBlank(obj.getCodigo())){
+            		codigo = obj.getCodigo();
+            	}
+                return codigo;
             case CODIGO_PROPRIEDADE:
                 return obj.getCodigoPropriedade();
             case CNPJ:

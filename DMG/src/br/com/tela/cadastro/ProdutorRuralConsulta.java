@@ -40,7 +40,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.border.BevelBorder;
 
 public class ProdutorRuralConsulta extends JInternalFrame {
-	private JTable tbProdutor;
+	private static JTable tbProdutor;
 	public static ProdutorRuralCad produtorRuralCad;
 	private static JPanel panelBotoes;
 	private JTextField txtCodigo;
@@ -117,6 +117,7 @@ public class ProdutorRuralConsulta extends JInternalFrame {
         tbProdutor.setShowGrid(true);
         tbProdutor.setShowHorizontalLines(true);
         tbProdutor.setShowVerticalLines(true);
+        pesquisar();
 	}
 
 	private void iniacializaComponentes() {
@@ -291,7 +292,7 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	
 	
 	public static void setPanelBotoes(boolean a){
-		panelBotoes.setVisible(a);	
+		panelBotoes.setVisible(a);
 	}
 	
 	private void fechar() {
