@@ -117,7 +117,6 @@ public class ProdutorRuralConsulta extends JInternalFrame {
         tbProdutor.setShowGrid(true);
         tbProdutor.setShowHorizontalLines(true);
         tbProdutor.setShowVerticalLines(true);
-        pesquisar();
 	}
 
 	private void iniacializaComponentes() {
@@ -293,6 +292,9 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	
 	public static void setPanelBotoes(boolean a){
 		panelBotoes.setVisible(a);
+		if(a){
+			((TMlistaProdutorRural) tbProdutor.getModel()).limpar();
+		}
 	}
 	
 	private void fechar() {
