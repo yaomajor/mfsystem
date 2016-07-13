@@ -166,7 +166,7 @@ public class MovNotaFiscal extends JInternalFrame {
 	static LancNota lancNota = null;
 	
 	public void lancar(){
-		lancNota = new LancNota("Incluir");
+		lancNota = new LancNota("Incluir",0);
 		Inicio.addTela(lancNota);
 		lancNota.setVisible(true);
 		try{

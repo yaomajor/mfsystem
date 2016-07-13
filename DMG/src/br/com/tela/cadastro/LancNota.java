@@ -63,8 +63,12 @@ public class LancNota extends JInternalFrame {
 	 */
 	JButton btnInc; 
 	String op = "";
+	int codCli = 0;
+	int nf = 0;
 	
-	public LancNota(String op) {
+	public LancNota(String op, int nf) {
+		this.nf=nf;
+		codCli = AN.stringPInt(AN.retAteTraco(Inicio.labelCliente.getText()));
 		String title = op.equals("Incluir")?"INCLUIR - Nota Fiscal":op.equals("Alterar")?"ALTERAR - Nota Fiscal":"VISUALIZAR - Nota Fiscal";
 		setTitle(title);
 		setFrameIcon(new ImageIcon(LancNota.class.getResource("/image/icRel.png")));
@@ -82,7 +86,7 @@ public class LancNota extends JInternalFrame {
 		textVend.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				if(comboBox.getSelectedItem().toString().equals("ENTRADA")){
+				if(comboTipo.getSelectedItem().toString().equals("ENTRADA")){
 					tentaBuscaVend();
 				}
 			}
@@ -93,7 +97,7 @@ public class LancNota extends JInternalFrame {
 				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){
 					textComp.requestFocus();
 				}else if(arg0.getKeyCode() == KeyEvent.VK_F9){
-					if(comboBox.getSelectedItem().toString().equals("ENTRADA")){
+					if(comboTipo.getSelectedItem().toString().equals("ENTRADA")){
 						f9Vendedor("");
 					}
 				}
@@ -123,7 +127,7 @@ public class LancNota extends JInternalFrame {
 				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){
 					comboProd.requestFocus();
 				}else if(arg0.getKeyCode() == KeyEvent.VK_F9){
-					if(comboBox.getSelectedItem().toString().equals("SAÍDA")){
+					if(comboTipo.getSelectedItem().toString().equals("SAÍDA")){
 						f9Comprador("");
 					}
 				}
@@ -132,7 +136,7 @@ public class LancNota extends JInternalFrame {
 		textComp.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				if(comboBox.getSelectedItem().toString().equals("SAÍDA")){
+				if(comboTipo.getSelectedItem().toString().equals("SAÍDA")){
 					tentaBuscaComp();
 				}
 			}
@@ -393,7 +397,7 @@ public class LancNota extends JInternalFrame {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){
-					comboBox.requestFocus();
+					comboTipo.requestFocus();
 				}
 			}
 		});
@@ -402,6 +406,11 @@ public class LancNota extends JInternalFrame {
 		getContentPane().add(textEnt);
 		
 		btnIncluir = new JButton("Gravar");
+		btnIncluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				gravar();
+			}
+		});
 		btnIncluir.setIcon(new ImageIcon(LancNota.class.getResource("/image/icSalvar2.png")));
 		btnIncluir.setBounds(175, 363, 115, 29);
 		getContentPane().add(btnIncluir);
@@ -421,13 +430,13 @@ public class LancNota extends JInternalFrame {
 		lblTipo.setBounds(293, 35, 57, 20);
 		getContentPane().add(lblTipo);
 		
-		comboBox = new JComboBox();
-		comboBox.addActionListener(new ActionListener() {
+		comboTipo = new JComboBox();
+		comboTipo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				tipo();
 			}
 		});
-		comboBox.addKeyListener(new KeyAdapter() {
+		comboTipo.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){
@@ -435,9 +444,9 @@ public class LancNota extends JInternalFrame {
 				}
 			}
 		});
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"ENTRADA", "SA\u00CDDA"}));
-		comboBox.setBounds(352, 35, 148, 20);
-		getContentPane().add(comboBox);
+		comboTipo.setModel(new DefaultComboBoxModel(new String[] {"ENTRADA", "SA\u00CDDA"}));
+		comboTipo.setBounds(352, 35, 148, 20);
+		getContentPane().add(comboTipo);
 		
 		textSubTotal = new JTextField();
 		textSubTotal.setText("0,00");
@@ -525,10 +534,10 @@ public class LancNota extends JInternalFrame {
 		textTotal.setText(total);
 		
 	}
-	JComboBox comboBox;
+	JComboBox comboTipo;
 	JButton btnIncluir ;
 	public void tipo(){
-		String tp = comboBox.getSelectedItem().toString();
+		String tp = comboTipo.getSelectedItem().toString();
 		if(tp.equals("ENTRADA")){
 			textVend.setEditable(true);
 			textVend.setText("");
@@ -566,7 +575,7 @@ public class LancNota extends JInternalFrame {
 	}
 	public boolean nfJaUsada(){
 		boolean ret = false;
-		String tp = comboBox.getSelectedItem().toString();
+		String tp = comboTipo.getSelectedItem().toString();
 		int codCli = 0;
 		int codCompVend = 0;
 		boolean jaAdd = false;//Metodo confere no Banco
@@ -750,6 +759,9 @@ public class LancNota extends JInternalFrame {
 	}
 	public boolean prodJaAddAlt(String prod){
 		boolean ret = false;
+		
+		textComp.getText();
+		textVend.getText();
 		for(int i=0; i<table.getRowCount(); i++){
 			if(i==linhaSel){
 				continue;
@@ -761,5 +773,60 @@ public class LancNota extends JInternalFrame {
 			}			
 		}		
 		return ret;
+	}
+	public void gravar(){
+		int totProd = table.getRowCount();
+		String[][] prods = null;
+		if(totProd>0){
+			prods = new String[totProd][6];
+			for(int i=0; i<totProd; i++){
+				prods[i][0] = AN.retAteTraco(table.getValueAt(i, 0).toString());
+				prods[i][1] = table.getValueAt(i, 1).toString();
+				prods[i][2] = table.getValueAt(i, 2).toString();
+				prods[i][3] = table.getValueAt(i, 3).toString();
+				prods[i][4] = table.getValueAt(i, 4).toString();
+				prods[i][5] = table.getValueAt(i, 5).toString();				
+			}
+		}
+		double totalNota = AN.stringPDouble(textSubTotal.getText());
+		
+		boolean nfJaUsou = true;
+		int codComVend = 0;
+		int nf = AN.stringPInt(textNF.getText());
+		if(textVend.isEditable()){
+			codComVend = AN.stringPInt(AN.retAteTraco(textComp.getText()));
+		}else{
+			codComVend = AN.stringPInt(AN.retAteTraco(textVend.getText()));
+		}
+		if(nf>0){
+			if(op.equals("Incluir")){
+				nfJaUsou = nF().numeroNotaJaAdd(nf, codCli, codComVend);
+			}else{
+				if(this.nf==nf){
+					nfJaUsou = false;
+				}else{
+					nfJaUsou = nF().numeroNotaJaAdd(nf, codCli, codComVend);
+				}
+			}
+			if(totalNota>0){
+				if(prods !=null){
+					String natOp = textNatOp.getText();
+					String dataEm = AN.dataPMySQL(textEm.getText());
+					String dataEn = AN.dataPMySQL(textEm.getText());
+					String tipo = comboTipo.getSelectedItem().toString();
+					
+					
+				}else{
+					AN.jOptionPaneError("Verifique o Valor da Nota Fiscal!");
+				}				
+			}else{
+				AN.jOptionPaneError("Número de Nota Fiscal já Informada!");
+			}
+		}else{
+			AN.jOptionPaneError("Informe um Número de Nota Fiscal!");
+		}
+		
+		
+		
 	}
 }

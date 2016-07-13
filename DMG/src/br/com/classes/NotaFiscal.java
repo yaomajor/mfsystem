@@ -1,6 +1,6 @@
 package br.com.classes;
 
-import java.sql.Connection;
+import java.sql.Connection; 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -113,6 +113,23 @@ public class NotaFiscal {
 			try{stmt.close();}catch(Exception e){}
 		}
 		return ret;
+	}
+	//
+	public boolean incluir(String cod) {
+		try {
+			oConn = (Connection) Conexao.abrirConexao();						
+			stmt = (Statement) oConn.createStatement();
+			boolean rs = stmt.execute("INSERT INTO NOTA_FISCAL(CLIENTE_ID, COMP_VEND_ID, numero, qtd_ent, qtd_sai, total, data_em, "
+					+ "data_ent, razao_transp, tipo, nat_op) VALUES ('" + cod+ "','S','S')");
+			return rs;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return false;
+		}finally{			
+			Conexao.fecharConexao();
+			try{oConn.close();}catch(Exception e){}
+			try{stmt.close();}catch(Exception e){}
+		}
 	}
 	
 }

@@ -95,6 +95,24 @@ public class AN {
 		return ret;
 
 	}
+	public static String dataPMySQL(String data) {
+		String ret = "    -  -  ";
+		try {
+			data = data.replace("/", "");
+		} catch (Exception e) {
+		}
+		try {
+			data = data.replace("-", "");
+		} catch (Exception e) {
+		}
+		try {
+			data = data.substring(4, 8) + "-" + data.substring(2, 4) + "-"
+					+ data.substring(0, 2);
+		} catch (Exception e) {
+		}
+		ret = data;
+		return ret;
+	}
 	public static String retData(String date) {
 		String ret = "";
 		Date data = new Date();
