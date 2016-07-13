@@ -14,7 +14,7 @@ public class NotaFiscal {
 	public static Statement stmt = null;
 	public static ResultSet rs = null;
 
-	
+	private String[][] prods = null;
 	private int notaFiscalId = 0;
 	private int codCli = 0;
 	private int numero = 0;
@@ -26,6 +26,20 @@ public class NotaFiscal {
 	private String dataEnt = "0000-00-00";
 	private String razaoTransp = "";
 	private String tipo = "";
+	private String natOp = "";
+	
+	public String[][] getProds() {
+		return prods;
+	}
+	public void setProds(String[][] prods) {
+		this.prods = prods;
+	}
+	public String getNatOp() {
+		return natOp;
+	}
+	public void setNatOp(String natOp) {
+		this.natOp = natOp;
+	}
 	public int getNotaFiscalId() {
 		return notaFiscalId;
 	}
@@ -115,14 +129,76 @@ public class NotaFiscal {
 		return ret;
 	}
 	//
-	public boolean incluir(String cod) {
+	public boolean incluir() {
 		try {
 			oConn = (Connection) Conexao.abrirConexao();						
 			stmt = (Statement) oConn.createStatement();
 			boolean rs = stmt.execute("INSERT INTO NOTA_FISCAL(CLIENTE_ID, COMP_VEND_ID, numero, qtd_ent, qtd_sai, total, data_em, "
-					+ "data_ent, razao_transp, tipo, nat_op) VALUES ('" + cod+ "','S','S')");
-			return rs;
+					+ "data_ent, razao_transp, tipo, nat_op) VALUES (" + codCli+ ","+codCompVend+","+numero+","+qtdEnt+","+qtdSai+","+total+
+					", '"+dataEm+"', '"+dataEnt+"','','"+tipo+"','"+natOp+"' )");
+			
+			for(int i=0; i<prods.length;i++){
+				rs = stmt.execute("INSERT INTO produto_nf(produto_id, qtd, vlr_unit, total, nota_fiscal) "
+						+ "VALUES ('" + prods[i][0]+ "',"+AN.stringPDouble( prods[i][2])+","+AN.stringPDouble( prods[i][3])+
+						","+AN.stringPDouble( prods[i][5])+","+numero+" )");
+				String sexo = prods[i][4];
+				if(prods[i][0].equals("0-3 meses") && sexo.equals("M")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+","+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0,0,0,0,0, 0 )");
+				}else if(prods[i][0].equals("0-3 meses") && sexo.equals("F")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0,0,0,0,0)");
+				}else if(prods[i][0].equals("3-8 meses") && sexo.equals("M")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0,0,0,0)");
+				}else if(prods[i][0].equals("3-8 meses") && sexo.equals("F")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0,0,0)");
+				}else if(prods[i][0].equals("8-12 meses") && sexo.equals("M")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0,0)");
+				}else if(prods[i][0].equals("8-12 meses") && sexo.equals("F")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0)");
+				}else if(prods[i][0].equals("12-24 meses") && sexo.equals("M")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0)");
+				}else if(prods[i][0].equals("12-24 meses") && sexo.equals("F")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0)");
+				}else if(prods[i][0].equals("24-36 meses") && sexo.equals("M")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0)");
+				}else if(prods[i][0].equals("24-36 meses") && sexo.equals("F")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0)");
+				}else if(prods[i][0].equals("Acima de 36 meses") && sexo.equals("M")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0)");
+				}else if(prods[i][0].equals("Acima de 36 meses") && sexo.equals("F")){
+					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
+							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+")");
+				}
+				
+				
+				
+			}
+			
+			return true;
 		} catch (Exception e) {
+			AN.jOptionPaneError("Erro ao Incluir a Nota Fiscal, contate o Administrador!\n"+e.getMessage());
 			System.out.println(e.getMessage());
 			return false;
 		}finally{			

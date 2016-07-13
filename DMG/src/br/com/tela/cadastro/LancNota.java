@@ -777,12 +777,14 @@ public class LancNota extends JInternalFrame {
 	public void gravar(){
 		int totProd = table.getRowCount();
 		String[][] prods = null;
+		double totalQtd = 0;
 		if(totProd>0){
 			prods = new String[totProd][6];
 			for(int i=0; i<totProd; i++){
-				prods[i][0] = AN.retAteTraco(table.getValueAt(i, 0).toString());
+				prods[i][0] = table.getValueAt(i, 0).toString();
 				prods[i][1] = table.getValueAt(i, 1).toString();
 				prods[i][2] = table.getValueAt(i, 2).toString();
+				totalQtd += AN.stringPDouble(prods[i][2]);
 				prods[i][3] = table.getValueAt(i, 3).toString();
 				prods[i][4] = table.getValueAt(i, 4).toString();
 				prods[i][5] = table.getValueAt(i, 5).toString();				
@@ -792,9 +794,11 @@ public class LancNota extends JInternalFrame {
 		
 		boolean nfJaUsou = true;
 		int codComVend = 0;
+		
 		int nf = AN.stringPInt(textNF.getText());
 		if(textVend.isEditable()){
 			codComVend = AN.stringPInt(AN.retAteTraco(textComp.getText()));
+			
 		}else{
 			codComVend = AN.stringPInt(AN.retAteTraco(textVend.getText()));
 		}
@@ -809,18 +813,41 @@ public class LancNota extends JInternalFrame {
 				}
 			}
 			if(totalNota>0){
-				if(prods !=null){
-					String natOp = textNatOp.getText();
-					String dataEm = AN.dataPMySQL(textEm.getText());
-					String dataEn = AN.dataPMySQL(textEm.getText());
-					String tipo = comboTipo.getSelectedItem().toString();
-					
-					
+				if(nfJaUsou==false){
+					if(prods !=null){
+						String natOp = textNatOp.getText();
+						String dataEm = AN.dataPMySQL(textEm.getText());
+						String dataEn = AN.dataPMySQL(textEm.getText());
+						String tipo = comboTipo.getSelectedItem().toString();
+						//
+						nF().setCodCli(codCli);
+						nF().setCodCompVend(codComVend);
+						nF().setNumero(this.nf); 
+						if(tipo.equals("ENTRADA")){
+							nF().setQtdEnt(totalQtd);
+							nF().setQtdSai(0);
+						}else{
+							nF().setQtdEnt(0);
+							nF().setQtdSai(totalQtd);
+						}
+						nF().setTotal(totalNota);
+						nF().setDataEm(dataEm);
+						nF().setDataEnt(dataEn);
+						nF().setTipo(tipo);
+						nF().setNatOp(natOp);
+						nF().setProds(prods);
+						boolean inc = nF().incluir();
+						if(inc==true){
+							AN.jOptionPaneInformation("Nota Fiscal Inclusa com Sucesso!");
+						}
+					}else{
+						AN.jOptionPaneError("Informe pelo menos 1 item da Nota Fiscal!");
+					}	
 				}else{
-					AN.jOptionPaneError("Verifique o Valor da Nota Fiscal!");
-				}				
+					AN.jOptionPaneError("Número de Nota Fiscal já Informada!");
+				}							
 			}else{
-				AN.jOptionPaneError("Número de Nota Fiscal já Informada!");
+				AN.jOptionPaneError("O Total da Nota não ser Igual a 0!");
 			}
 		}else{
 			AN.jOptionPaneError("Informe um Número de Nota Fiscal!");
