@@ -1,6 +1,19 @@
 package br.com.classes;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import br.com.util.AN;
+import br.com.util.Conexao;
+
 public class Animais {
+	public static Connection oConn = null;
+	public static PreparedStatement stmtP = null;
+	public static Statement stmt = null;
+	public static ResultSet rs = null;
+	
 	private int animaisId = 0;
 	private double zeroATresM = 0d;
 	private double zeroATresF = 0d;
@@ -101,5 +114,99 @@ public class Animais {
 	public void setCodCliente(int codCliente) {
 		this.codCliente = codCliente;
 	}
-	
+	public String[][] buscarPassandoMatrizCad(String sql1, String sql2) {
+		String[][] ret = null;
+		try {
+			oConn = (Connection) Conexao.abrirConexao();
+			stmt = (Statement) oConn.createStatement();
+			rs = (ResultSet) stmt.executeQuery(sql1);
+			int i = 0;
+			if (rs.next()) {
+				i = rs.getInt("total");
+			}
+			rs.close();
+			if (i > 0) {
+				rs = (ResultSet) stmt.executeQuery(sql2);
+				ret = new String[i][12];
+				i = 0;
+				//String[] cab = {"Código","Faturamento", "Cliente", "Valor","Data"};
+				while (rs.next()) {
+					ret[i][0] = String.valueOf(rs.getInt("zero_a_tres_m"));
+					ret[i][1] = String.valueOf(rs.getInt("zero_a_tres_f"));
+					ret[i][2] = String.valueOf(rs.getInt("tres_a_oito_m"));
+					ret[i][3] = String.valueOf(rs.getInt("tres_a_oito_f"));
+					ret[i][4] = String.valueOf(rs.getInt("oito_a_doze_m"));
+					ret[i][5] = String.valueOf(rs.getInt("oito_a_doze_f"));
+					ret[i][6] = String.valueOf(rs.getInt("doze_a_vinte_q_m"));
+					ret[i][7] = String.valueOf(rs.getInt("doze_a_vinte_q_f"));
+					ret[i][8] = String.valueOf(rs.getInt("vinte_q_a_trinta_s_m"));
+					ret[i][9] = String.valueOf(rs.getInt("vinte_q_a_trinta_s_f"));
+					ret[i][10] = String.valueOf(rs.getInt("acima_trinta_s_m"));
+					ret[i][11] = String.valueOf(rs.getInt("acima_trinta_s_f"));
+					i++;
+				}
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			Conexao.fecharConexao();
+			try {
+				rs.close();
+			} catch (Exception e) {
+			}
+			try {
+				oConn.close();
+			} catch (Exception e) {
+			}
+			try {
+				stmt.close();
+			} catch (Exception e) {
+			}
+		}
+		return ret;
+	}
+	//
+	public String[] buscarTotais(String sql) {
+		String[] ret = null;
+		try {
+			oConn = (Connection) Conexao.abrirConexao();
+			stmt = (Statement) oConn.createStatement();
+			rs = (ResultSet) stmt.executeQuery(sql);
+			int i = 0;
+			if (rs.next()) {
+				ret = new String[12];
+				ret[0] = String.valueOf(rs.getInt("zero_a_tres_m"));
+				ret[1] = String.valueOf(rs.getInt("zero_a_tres_f"));
+				ret[2] = String.valueOf(rs.getInt("tres_a_oito_m"));
+				ret[3] = String.valueOf(rs.getInt("tres_a_oito_f"));
+				ret[4] = String.valueOf(rs.getInt("oito_a_doze_m"));
+				ret[5] = String.valueOf(rs.getInt("oito_a_doze_f"));
+				ret[6] = String.valueOf(rs.getInt("doze_a_vinte_q_m"));
+				ret[7] = String.valueOf(rs.getInt("doze_a_vinte_q_f"));
+				ret[8] = String.valueOf(rs.getInt("vinte_q_a_trinta_s_m"));
+				ret[9] = String.valueOf(rs.getInt("vinte_q_a_trinta_s_f"));
+				ret[10] = String.valueOf(rs.getInt("acima_trinta_s_m"));
+				ret[11] = String.valueOf(rs.getInt("acima_trinta_s_f"));
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			Conexao.fecharConexao();
+			try {
+				rs.close();
+			} catch (Exception e) {
+			}
+			try {
+				oConn.close();
+			} catch (Exception e) {
+			}
+			try {
+				stmt.close();
+			} catch (Exception e) {
+			}
+		}
+		return ret;
+	}
 }

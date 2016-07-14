@@ -313,7 +313,7 @@ public class Inicio extends JFrame {
 	//
 	static Estoque estoque;
 	public static void estoque(){
-		estoque = new Estoque();
+		estoque = new Estoque(AN.stringPInt(AN.retAteTraco(labelCliente.getText())));
 		addTela(estoque);
 		estoque.setVisible(true);
 		try{
