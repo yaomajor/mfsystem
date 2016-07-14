@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import br.com.entity.ProdutorRural;
 import br.com.exception.Excecoes;
 import br.com.persistencia.ProdutorRuralDao;
+import br.com.util.AN;
 import br.com.util.Mensagem;
 
 import javax.swing.JDesktopPane;
@@ -283,7 +284,7 @@ public class Inicio extends JFrame {
 	//
 	static MovNotaFiscal movNotaFiscal=null;
 	public void movNotaFiscal(){
-		movNotaFiscal = new MovNotaFiscal();
+		movNotaFiscal = new MovNotaFiscal(AN.stringPInt(AN.retAteTraco(labelCliente.getText())));
 		addTela(movNotaFiscal);
 		movNotaFiscal.setVisible(true);
 		try{
@@ -377,7 +378,7 @@ public class Inicio extends JFrame {
 	F9Cliente f9Cliente = null;
 	public void f9Cliente(String txt){
 		try {
-			f9Cliente = new F9Cliente(null, txt, "Inicio");
+			f9Cliente = new F9Cliente(null, txt, "Inicio",true);
 			f9Cliente.setVisible(true);
 			f9Cliente.setModal(true);
 

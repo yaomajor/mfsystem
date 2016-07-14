@@ -131,7 +131,8 @@ public class NotaFiscal {
 	//
 	public boolean incluir() {
 		try {
-			oConn = (Connection) Conexao.abrirConexao();						
+			oConn = (Connection) Conexao.abrirConexao();
+			oConn.setAutoCommit(false);
 			stmt = (Statement) oConn.createStatement();
 			boolean rs = stmt.execute("INSERT INTO NOTA_FISCAL(CLIENTE_ID, COMP_VEND_ID, numero, qtd_ent, qtd_sai, total, data_em, "
 					+ "data_ent, razao_transp, tipo, nat_op) VALUES (" + codCli+ ","+codCompVend+","+numero+","+qtdEnt+","+qtdSai+","+total+
@@ -142,70 +143,135 @@ public class NotaFiscal {
 						+ "VALUES ('" + prods[i][0]+ "',"+AN.stringPDouble( prods[i][2])+","+AN.stringPDouble( prods[i][3])+
 						","+AN.stringPDouble( prods[i][5])+","+numero+" )");
 				String sexo = prods[i][4];
+				double qtdEst = AN.stringPDouble( prods[i][2]);
+				if(tipo.equals("SAÍDA")){
+					qtdEst *= -1;
+				}
 				if(prods[i][0].equals("0-3 meses") && sexo.equals("M")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+","+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0,0,0,0,0, 0 )");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+","+qtdEst+", 0,0,0,0,0, 0,0,0,0,0, 0 )");
 				}else if(prods[i][0].equals("0-3 meses") && sexo.equals("F")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+",0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0,0,0,0,0)");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,"+qtdEst+", 0,0,0,0,0, 0,0,0,0,0)");
 				}else if(prods[i][0].equals("3-8 meses") && sexo.equals("M")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+",0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0,0,0,0)");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,"+qtdEst+", 0,0,0,0,0, 0,0,0,0)");
 				}else if(prods[i][0].equals("3-8 meses") && sexo.equals("F")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+",0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0,0,0)");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,"+qtdEst+", 0,0,0,0,0, 0,0,0)");
 				}else if(prods[i][0].equals("8-12 meses") && sexo.equals("M")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+",0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0,0)");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,"+qtdEst+", 0,0,0,0,0, 0,0)");
 				}else if(prods[i][0].equals("8-12 meses") && sexo.equals("F")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+",0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0, 0)");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,"+qtdEst+", 0,0,0,0,0, 0)");
 				}else if(prods[i][0].equals("12-24 meses") && sexo.equals("M")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+",0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0,0)");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,"+qtdEst+", 0,0,0,0,0)");
 				}else if(prods[i][0].equals("12-24 meses") && sexo.equals("F")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0,0)");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,"+qtdEst+", 0,0,0,0)");
 				}else if(prods[i][0].equals("24-36 meses") && sexo.equals("M")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0,0)");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,"+qtdEst+", 0,0,0)");
 				}else if(prods[i][0].equals("24-36 meses") && sexo.equals("F")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0,0)");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,"+qtdEst+", 0,0)");
 				}else if(prods[i][0].equals("Acima de 36 meses") && sexo.equals("M")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+", 0)");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,0,"+qtdEst+", 0)");
 				}else if(prods[i][0].equals("Acima de 36 meses") && sexo.equals("F")){
 					rs = stmt.execute("INSERT INTO animais(cliente_id, zero_a_tres_m, zero_a_tres_f, tres_a_oito_m, tres_a_oito_f, oito_a_doze_m, oito_a_doze_f,"
-							+ "doze_a_vinte_m, doze_a_vinte_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
-							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,0,0,"+AN.stringPDouble( prods[i][2])+")");
+							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f) "
+							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,0,0,"+qtdEst+")");
 				}
-				
-				
-				
+				//				
 			}
 			
 			return true;
 		} catch (Exception e) {
+			try {
+				oConn.rollback();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			AN.jOptionPaneError("Erro ao Incluir a Nota Fiscal, contate o Administrador!\n"+e.getMessage());
 			System.out.println(e.getMessage());
 			return false;
-		}finally{			
+		}finally{		
+			try {
+				oConn.setAutoCommit(true);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Conexao.fecharConexao();
 			try{oConn.close();}catch(Exception e){}
 			try{stmt.close();}catch(Exception e){}
 		}
+	}
+	//
+	public String[][] buscarPassandoMatrizCad(String sql1, String sql2) {
+		String[][] ret = null;
+		try {
+			oConn = (Connection) Conexao.abrirConexao();
+			stmt = (Statement) oConn.createStatement();
+			rs = (ResultSet) stmt.executeQuery(sql1);
+			int i = 0;
+			if (rs.next()) {
+				i = rs.getInt("total");
+			}
+			rs.close();
+			if (i > 0) {
+				rs = (ResultSet) stmt.executeQuery(sql2);
+				ret = new String[i][7];
+				i = 0;
+				//String[] cab = {"Código","Faturamento", "Cliente", "Valor","Data"};
+				while (rs.next()) {
+					ret[i][0] = AN.oitoDigitos(rs.getString("nf.numero"));					
+					String cliente = rs.getString("pj.razao_social");
+					ret[i][1] = AN.seisDigitos(rs.getString("pj.id_pessoa")) + " - " + cliente;
+					ret[i][2] = rs.getString("datap");
+					ret[i][3] = rs.getString("datae");					
+					ret[i][4] = String.valueOf(rs.getInt("qtd"));
+					ret[i][5] = rs.getString("nf.tipo");
+					ret[i][6] = AN.doublePStringRS(rs.getDouble("total"));
+					
+					
+					i++;
+				}
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			Conexao.fecharConexao();
+			try {
+				rs.close();
+			} catch (Exception e) {
+			}
+			try {
+				oConn.close();
+			} catch (Exception e) {
+			}
+			try {
+				stmt.close();
+			} catch (Exception e) {
+			}
+		}
+		return ret;
 	}
 	
 }

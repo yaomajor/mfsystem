@@ -76,9 +76,10 @@ public class F9Cliente extends JDialog {
 	 * @param tela 
 	 */
 	String tela = "";
-	public F9Cliente(Frame owner, String desc, String tela) {
+	static boolean sohCliente = false;
+	public F9Cliente(Frame owner, String desc, String tela, boolean sohCliente) {
 		super(owner);
-		
+		this.sohCliente = sohCliente;
 		initialize();
 		if(!desc.equals("")){
 			jTextField.setText(desc);
@@ -227,7 +228,7 @@ public class F9Cliente extends JDialog {
 		String sql2 = "";
 		
 		limparTable();
-		
+		String ad = sohCliente==true?" and pr.cliente_contabilidade='S' ":"";
 		String text = jTextField.getText();
 		int codigo = 0;
 		try{codigo = AN.stringPInt(text);}catch(Exception e){}
@@ -235,22 +236,22 @@ public class F9Cliente extends JDialog {
 			sql1 = "SELECT count(p.id) as total FROM pessoa p "		
 					+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
 					+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
-					+ " where pr.cliente_contabilidade='S' and p.id is not null and p.id="+text;
+					+ " where p.id is not null and p.id="+text+ad;
 			sql2 = "SELECT p.id, pj.razao_social FROM pessoa p "
 					+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
 					+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
-					+ " where pr.cliente_contabilidade='S' and p.id is not null and p.id="+text;
+					+ " where  p.id is not null and p.id="+text+ad;
 			dados = c.buscarPassandoMatrizCad(sql1, sql2);
 		}
 		if(dados == null){
 			sql1 = "SELECT count(p.id) as total FROM pessoa p "
 					+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
 					+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
-					+ " where pr.cliente_contabilidade='S' and pj.razao_social like '%"+text+"%'";
+					+ " where   pj.razao_social like '%"+text+"%'"+ad;
 			sql2 = "SELECT p.id, pj.razao_social FROM pessoa p "
 					+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
 					+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
-					+ " where pr.cliente_contabilidade='S' and pj.razao_social like '%"+text+"%'";
+					+ " where   pj.razao_social like '%"+text+"%'"+ad;
 			dados = c.buscarPassandoMatrizCad(sql1, sql2);
 		}
 		
@@ -478,7 +479,7 @@ public class F9Cliente extends JDialog {
 				dispose();				
 			}catch(Exception e){}
 		}
-		
+		sohCliente=false;
 	}
 	
 }

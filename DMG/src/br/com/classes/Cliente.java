@@ -66,20 +66,20 @@ public class Cliente extends Pessoa {
 				sql1 = "SELECT count(p.id) as total FROM pessoa p "
 						+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
 						+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
-						+ " where pr.cliente_contabilidade='S' and pj.razao_social like '%"+desc+"%'";
+						+ " where  pj.razao_social like '%"+desc+"%'";//pr.cliente_contabilidade='S' and
 				sql2 = "SELECT p.id, pj.razao_social FROM pessoa p "
 						+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
 						+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
-						+ " where pr.cliente_contabilidade='S' and pj.razao_social like '%"+desc+"%'";
+						+ " where  pj.razao_social like '%"+desc+"%'";
 			}else{
 				sql1 = "SELECT count(p.id) as total FROM pessoa p "		
 						+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
 						+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
-						+ " where pr.cliente_contabilidade='S' and p.id is not null and p.id="+codigo;
+						+ " where  p.id is not null and p.id="+codigo;
 				sql2 = "SELECT p.id, pj.razao_social FROM pessoa p "
 						+ "left join pessoa_juridica pj on pj.id_pessoa = p.id "
 						+" left join produtor_rural pr on pr.id_pessoa_juridica=pj.id "
-						+ " where pr.cliente_contabilidade='S' and p.id is not null and p.id="+codigo;
+						+ " where  p.id is not null and p.id="+codigo;
 			}
 			int i = 0;
 			rs = (ResultSet) stmt.executeQuery(sql1);

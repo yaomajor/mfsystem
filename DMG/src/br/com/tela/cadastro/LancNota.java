@@ -557,6 +557,7 @@ public class LancNota extends JInternalFrame {
 			MovNotaFiscal.lancNota=null;
 			Inicio.movNotaFiscal.setSelected(true);
 			MovNotaFiscal.setBotoes(true);
+			limparCampos();
 		}catch(Exception e){}
 		
 	}
@@ -647,7 +648,7 @@ public class LancNota extends JInternalFrame {
 	
 	public void f9Vendedor(String txt) {
 		try {
-			f9Cliente = new F9Cliente(null, txt, "LancNotaVend");
+			f9Cliente = new F9Cliente(null, txt, "LancNotaVend", false);
 			f9Cliente.setVisible(true);
 			f9Cliente.setModal(true);
 
@@ -658,7 +659,7 @@ public class LancNota extends JInternalFrame {
 	//
 	public void f9Comprador(String txt) {
 		try {
-			f9Cliente = new F9Cliente(null, txt, "LancNotaComp");
+			f9Cliente = new F9Cliente(null, txt, "LancNotaComp", false);
 			f9Cliente.setVisible(true);
 			f9Cliente.setModal(true);
 
@@ -673,7 +674,7 @@ public class LancNota extends JInternalFrame {
 		String vlrUnit = textVlrUnit.getText();
 		String sexo = comboSexo.getSelectedItem().toString();
 		String total = textTotal.getText();
-		boolean jaAdd = prodJaAdd(prod);
+		boolean jaAdd = prodJaAdd(prod, sexo);
 		if(jaAdd==false){
 			double tot = AN.stringPDouble(total);
 			if(tot>0){
@@ -746,11 +747,12 @@ public class LancNota extends JInternalFrame {
 		}
 		textSubTotal.setText(AN.doublePStringRS(total));
 	}
-	public boolean prodJaAdd(String prod){
+	public boolean prodJaAdd(String prod, String sexo){
 		boolean ret = false;
 		for(int i=0; i<table.getRowCount(); i++){
 			String prodFor = table.getValueAt(i, 0).toString();
-			if(prod.equals(prodFor)){
+			String sexoTab = table.getValueAt(i, 4).toString();
+			if(prod.equals(prodFor) && sexo.equals(sexoTab)){
 				ret=true;
 				break;
 			}			
@@ -797,10 +799,10 @@ public class LancNota extends JInternalFrame {
 		
 		int nf = AN.stringPInt(textNF.getText());
 		if(textVend.isEditable()){
-			codComVend = AN.stringPInt(AN.retAteTraco(textComp.getText()));
+			codComVend = AN.stringPInt(AN.retAteTraco(textVend.getText()));
 			
 		}else{
-			codComVend = AN.stringPInt(AN.retAteTraco(textVend.getText()));
+			codComVend = AN.stringPInt(AN.retAteTraco(textComp.getText()));
 		}
 		if(nf>0){
 			if(op.equals("Incluir")){
@@ -822,7 +824,7 @@ public class LancNota extends JInternalFrame {
 						//
 						nF().setCodCli(codCli);
 						nF().setCodCompVend(codComVend);
-						nF().setNumero(this.nf); 
+						nF().setNumero(nf); 
 						if(tipo.equals("ENTRADA")){
 							nF().setQtdEnt(totalQtd);
 							nF().setQtdSai(0);
@@ -839,6 +841,12 @@ public class LancNota extends JInternalFrame {
 						boolean inc = nF().incluir();
 						if(inc==true){
 							AN.jOptionPaneInformation("Nota Fiscal Inclusa com Sucesso!");
+							if(AN.jOptionPaneQuestion("Deseja Continuar Incluindo?")==0){
+								limparCampos();
+								textNF.requestFocus();
+							}else{
+								fechar();
+							}
 						}
 					}else{
 						AN.jOptionPaneError("Informe pelo menos 1 item da Nota Fiscal!");
@@ -851,9 +859,37 @@ public class LancNota extends JInternalFrame {
 			}
 		}else{
 			AN.jOptionPaneError("Informe um Número de Nota Fiscal!");
+		}		
+	}
+	public void limparCampos(){
+		textNF.setText("");
+		textNatOp.setText("");
+		textEm.setText(dataAtual);
+		textEnt.setText(dataAtual);
+		comboTipo.setSelectedItem("ENTRADA");
+		tipo();
+		textQtd.setText("");
+		textVlrUnit.setText("0");
+		comboSexo.setSelectedItem("M");
+		textTotal.setText("0,00");
+		textSubTotal.setText("0,00");
+		limparTable();
+		
+	}
+	public void limparTable() {
+		try {
+			table.removeEditor();
+			int modelos = table.getRowCount();
+			int i = 0;
+			if (modelos > 0) {
+				do {
+					modelo.removeRow(i);
+				} while (i < modelos && table.getRowCount() != 0);
+				i++;
+			}
+			
+			
+		} catch (Exception e) {
 		}
-		
-		
-		
 	}
 }
