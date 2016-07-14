@@ -470,17 +470,17 @@ public class Estoque extends JInternalFrame {
 		
 		if(!combo.equals("Todos")){
 			if(combo.equals("0-3 meses")){
-				combo=" and zero_a_tres_m>0 or zero_a_tres_f>0 ";
+				combo=" and zero_a_tres_m !=0 or zero_a_tres_f !=0 ";
 			}else if(combo.equals("3-8 meses")){
-				combo=" and tres_a_oito_m>0 or tres_a_oito_f>0 ";
+				combo=" and tres_a_oito_m !=0  or tres_a_oito_f !=0 ";
 			}else if(combo.equals("8-12 meses")){
-				combo=" and oito_a_doze_m>0 or oito_a_doze_f>0 ";
+				combo=" and oito_a_doze_m !=0 or oito_a_doze_f !=0 ";
 			}else if(combo.equals("12-24 meses")){
-				combo=" and doze_a_vinte_q_m>0 or doze_a_vinte_q_f>0 ";
+				combo=" and doze_a_vinte_q_m !=0 or doze_a_vinte_q_f !=0 ";
 			}else if(combo.equals("24-36 meses")){
-				combo=" and vinte_q_a_trinta_s_m>0 or vinte_q_a_trinta_s_f>0 ";
+				combo=" and vinte_q_a_trinta_s_m !=0 or vinte_q_a_trinta_s_f !=0 ";
 			}else if(combo.equals("Acima de 36 meses")){
-				combo=" and acima_trinta_s_m>0 or acima_trinta_s_f>0 ";
+				combo=" and acima_trinta_s_m !=0 or acima_trinta_s_f !=0 ";
 			}						
 		}else{
 			combo="";
