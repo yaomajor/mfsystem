@@ -165,9 +165,9 @@ public class NotaFiscal {
 					", '"+dataEm+"', '"+dataEnt+"','','"+tipo+"','"+natOp+"' )");
 			
 			for(int i=0; i<prods.length;i++){
-				rs = stmt.execute("INSERT INTO produto_nf(produto_id, qtd, vlr_unit, total, nota_fiscal, cliente_id) "
+				rs = stmt.execute("INSERT INTO produto_nf(produto_id, qtd, vlr_unit, total, nota_fiscal, cliente_id, sexo, un) "
 						+ "VALUES ('" + prods[i][0]+ "',"+AN.stringPDouble( prods[i][2])+","+AN.stringPDouble( prods[i][3])+
-						","+AN.stringPDouble( prods[i][5])+","+numero+","+codCli+" )");
+						","+AN.stringPDouble( prods[i][5])+","+numero+","+codCli+",'"+prods[i][4]+"','"+prods[i][1]+"' )");
 				String sexo = prods[i][4];
 				double qtdEst = AN.stringPDouble( prods[i][2]);
 				if(tipo.equals("SAÍDA")){
@@ -299,5 +299,103 @@ public class NotaFiscal {
 		}
 		return ret;
 	}
-	
+	//
+	public String[] buscarDados(int nf, int codCli) {
+		String[] ret = null;
+		try {
+			oConn = (Connection) Conexao.abrirConexao();
+			stmt = (Statement) oConn.createStatement();
+			String sql = "SELECT nf.numero, nf.nat_op, pj2.id_pessoa, pj2.razao_social, DATE_FORMAT(nf.data_em, '%d/%m/%Y') as datap, "
+						+ "DATE_FORMAT(nf.data_ent, '%d/%m/%Y') as datae, "
+		+ "if(nf.qtd_ent>0, nf.qtd_ent,nf.qtd_sai) as qtd, nf.tipo, "
+		+ "nf.total FROM nota_fiscal nf "
+		+ "left join pessoa_juridica pj on pj.id_pessoa=nf.cliente_id "
+		+ " left join pessoa_juridica pj2 on pj2.id_pessoa=nf.comp_vend_id "
+		+ "where nf.cliente_id="+codCli+" and nf.numero="+nf;
+			rs = (ResultSet) stmt.executeQuery(sql);
+			System.out.println(sql);
+			if (rs.next()) {
+				ret = new String[8];
+				ret[0] = AN.seisDigitos(rs.getString("nf.numero"));					
+				String cliente = rs.getString("pj2.razao_social");
+				ret[1] = AN.seisDigitos(rs.getString("pj2.id_pessoa")) + " - " + cliente;
+				ret[2] = rs.getString("datap");
+				ret[3] = rs.getString("datae");					
+				ret[4] = String.valueOf(rs.getInt("qtd"));
+				ret[5] = rs.getString("nf.tipo");
+				ret[6] = AN.doublePStringRS(rs.getDouble("total"));
+				ret[7] = rs.getString("nf.nat_op");
+			}
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			Conexao.fecharConexao();
+			try {
+				rs.close();
+			} catch (Exception e) {
+			}
+			try {
+				oConn.close();
+			} catch (Exception e) {
+			}
+			try {
+				stmt.close();
+			} catch (Exception e) {
+			}
+		}
+		return ret;
+	}
+	public String[][] buscarDadosProd(int nf, int codCli) {
+		String[][] ret = null;
+		try {
+			oConn = (Connection) Conexao.abrirConexao();
+			stmt = (Statement) oConn.createStatement();
+			String sql1 = "select count(produto_id) as total from produto_nf where cliente_id="+codCli+" and nota_fiscal="+nf;
+			String sql2 = "select * from produto_nf where cliente_id="+codCli+" and nota_fiscal="+nf;
+			
+			rs = (ResultSet) stmt.executeQuery(sql1);
+			int i=0;
+			if (rs.next()) {
+				i = rs.getInt("total");
+				if(i>0){
+					ret=new String[i][6];
+					i=0;
+					rs = (ResultSet) stmt.executeQuery(sql2);
+					while(rs.next()){
+						ret[i][0] = rs.getString("produto_id");
+						ret[i][1] = rs.getString("un");
+						ret[i][2] = rs.getString("qtd");
+						ret[i][3] = AN.doublePStringRS(rs.getDouble("vlr_unit"));
+						ret[i][4] = rs.getString("sexo");
+						ret[i][5] = AN.doublePStringRS(rs.getDouble("total"));
+						
+						i++;
+					}
+					
+					
+				}
+			}
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			Conexao.fecharConexao();
+			try {
+				rs.close();
+			} catch (Exception e) {
+			}
+			try {
+				oConn.close();
+			} catch (Exception e) {
+			}
+			try {
+				stmt.close();
+			} catch (Exception e) {
+			}
+		}
+		return ret;
+	}
 }

@@ -65,12 +65,44 @@ public class LancNota extends JInternalFrame {
 	String op = "";
 	int codCli = 0;
 	int nf = 0;
-	
+	//
+	public void initialize(){
+		if(!op.equals("Incluir")){
+			carregar();
+			
+		}
+	}
+	public void carregar(){
+		String[] ret = nF().buscarDados(nf, codCli);
+		if(ret!=null){
+			textNF.setText(ret[0]);
+			textNatOp.setText(ret[7]);
+			textEm.setText(ret[2]);
+			textEnt.setText(ret[3]);
+			comboTipo.setSelectedItem(ret[5]);
+			tipo();
+			if(textComp.isEditable()){
+				textComp.setText(ret[1]);
+			}else{
+				textVend.setText(ret[1]);
+			}
+			String[][] prods = nF().buscarDadosProd(nf, codCli);
+			if(prods!=null){
+				limparTable();
+				for(int i=0; i<prods.length; i++){
+					modelo.addRow(new Object[] {prods[i][0],prods[i][1],prods[i][2],prods[i][3],prods[i][4],prods[i][5]});
+				}
+				
+				totalNota();
+			}
+		}
+		
+	}
 	public LancNota(String op, int nf) {
 		this.nf=nf;
 		this.op=op;
 		codCli = AN.stringPInt(AN.retAteTraco(Inicio.labelCliente.getText()));
-		String title = op.equals("Incluir")?"INCLUIR - Nota Fiscal":op.equals("Alterar")?"ALTERAR - Nota Fiscal":"VISUALIZAR - Nota Fiscal";
+		String title = op.equals("Incluir")?"INCLUIR - Nota Fiscal":"ALTERAR/VER - Nota Fiscal";
 		setTitle(title);
 		setFrameIcon(new ImageIcon(LancNota.class.getResource("/image/icRel.png")));
 		getContentPane().setBackground(Color.WHITE);
@@ -464,8 +496,10 @@ public class LancNota extends JInternalFrame {
 		lblTotalDaNota.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblTotalDaNota.setBounds(326, 328, 139, 20);
 		getContentPane().add(lblTotalDaNota);
-
+		
+		initialize();
 	}
+	
 	private JTable getJTable() {
 		if (table == null) {
 			modelo.addColumn("Produto");
@@ -818,6 +852,9 @@ public class LancNota extends JInternalFrame {
 			if(totalNota>0){
 				if(nfJaUsou==false){
 					if(prods !=null){
+						if(op.equals("Alterar")){
+							nF().excluirNotaFiscal(nf, codCli);
+						}
 						String natOp = textNatOp.getText();
 						String dataEm = AN.dataPMySQL(textEm.getText());
 						String dataEn = AN.dataPMySQL(textEm.getText());
@@ -841,13 +878,19 @@ public class LancNota extends JInternalFrame {
 						nF().setProds(prods);
 						boolean inc = nF().incluir();
 						if(inc==true){
-							AN.jOptionPaneInformation("Nota Fiscal Inclusa com Sucesso!");
-							if(AN.jOptionPaneQuestion("Deseja Continuar Incluindo?")==0){
-								limparCampos();
-								textNF.requestFocus();
-							}else{
+							String msg = op.equals("Incluir")?"Nota Fiscal Inclusa com Sucesso!":"Nota Fiscal Alterada com Sucesso!";
+							AN.jOptionPaneInformation(msg);
+							if(op.equals("Alterar")){
 								fechar();
+							}else{
+								if(AN.jOptionPaneQuestion("Deseja Continuar Incluindo?")==0){
+									limparCampos();
+									textNF.requestFocus();
+								}else{
+									fechar();
+								}	
 							}
+							
 						}
 					}else{
 						AN.jOptionPaneError("Informe pelo menos 1 item da Nota Fiscal!");

@@ -171,6 +171,11 @@ public class MovNotaFiscal extends JInternalFrame {
 		btnLanar.setIcon(new ImageIcon(MovNotaFiscal.class.getResource("/image/icLanc.png")));
 		
 		JButton btnAlterar = new JButton("Alterar/Ver");
+		btnAlterar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				alterar();
+			}
+		});
 		btnAlterar.setBounds(148, 0, 135, 32);
 		panel.add(btnAlterar);
 		btnAlterar.setIcon(new ImageIcon(MovNotaFiscal.class.getResource("/image/icAlt.png")));
@@ -412,6 +417,23 @@ public class MovNotaFiscal extends JInternalFrame {
 			lancNota.setSelected(true);
 		}catch(Exception e){}
 		setBotoes(false);
+	}
+	public void alterar(){
+		int nf = 0;
+		try{nf = AN.stringPInt(table.getValueAt(linhaSel, 0).toString());}catch(Exception e){}
+		if(nf>0){
+			lancNota = new LancNota("Alterar",nf);
+			Inicio.addTela(lancNota);
+			lancNota.setVisible(true);
+			try{
+				lancNota.setSelected(true);
+			}catch(Exception e){}
+			setBotoes(false);
+		}else{
+			AN.jOptionPaneAlert("Selecione uma Nota Fiscal para Alterar/Ver!");
+		}
+		
+		
 	}
 	public void fechar(){
 		dispose();
