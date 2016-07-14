@@ -26,17 +26,15 @@ public class ProdutorRural implements Serializable{
 	@Column(name = "ID")
 	private Long id;
 	
-	@NotNull
+	@NotNull(message="Informe cliente contabilidade!")
 	@Size(min = 1, max = 1)
 	@Column(name = "CLIENTE_CONTABILIDADE")
 	private String clienteContalidade;
 	
-	@NotNull
 	@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "ID_PESSOA_JURIDICA")
 	private PessoaJuridica pessoaJuridica;
 	
-	@NotNull
 	@Version
 	@Column(name = "JVERSION")
 	private Long jversion;
@@ -45,13 +43,13 @@ public class ProdutorRural implements Serializable{
 	@Column(name = "CODIGO")
 	private String codigo;
 	
-	@NotNull
-	@Size(min = 1, max = 100)
+	@NotNull(message="Informe o Nome da Propriedade!")
+	@Size(min = 1, max = 100, message="Nome da Propriedade deve conter entre 1 e 100 caracteres!")
 	@Column(name = "NOME_PROPRIEDADE")
 	private String nomePropriedade;
 	
-	@NotNull
-	@Size(min = 1, max = 20)
+	@NotNull(message="Informe o Código da Propriedade!")
+	@Size(min = 1, max = 20, message="Código da Propriedade deve conter entre 1 e 100 caracteres!")
 	@Column(name = "CODIGO_PROPRIEDADE")
 	private String codigoPropriedade;
 	

@@ -26,8 +26,8 @@ public class PessoaJuridica implements Serializable{
 	@Column(name = "ID")
 	private Long id;
 	
-	@NotNull
-	@Size(min = 1, max = 100)
+	@NotNull(message="Informe Razão Social!")
+	@Size(min = 1, max = 100, message="Razão Social deve conter entre 1 e 100 caracteres!")
 	@Column(name = "RAZAO_SOCIAL")
 	private String razaoSocial;
 	
@@ -35,22 +35,20 @@ public class PessoaJuridica implements Serializable{
 	@Column(name = "NOME_FANTASIA")
 	private String nomeFantasia;
 
-	@NotNull
-	@Size(min = 1, max = 18)
+	@NotNull(message="Informe Cnpj!")
+	@Size(min = 1, max = 18, message="Cnpj deve conter entre 1 e 18 caracteres!")
 	@Column(name = "CNPJ")
 	private String cnpj;
 	
-	@NotNull
-	@Size(min = 1, max = 20)
+	@NotNull(message="Informe Inscrição Estadual!")
+	@Size(min = 1, max = 20, message="Inscrição Estadual deve conter entre 1 e 20 caracteres!")
 	@Column(name = "INSCRICAO_ESTADUAL")
 	private String inscricaoEstadual;
 	
-	@NotNull
 	@Version
 	@Column(name = "JVERSION")
 	private Long jversion;
 	
-	@NotNull
 	@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "ID_PESSOA")
 	private Pessoa pessoa;

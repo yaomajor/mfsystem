@@ -13,6 +13,9 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -53,6 +56,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 import java.awt.event.ActionEvent;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -60,6 +64,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 public class ProdutorRuralCad extends JInternalFrame {
+	
 	private JTextField txtNomePropriedade;
 	private JTextField txtCodigo;
 	private JTextField txtCnpj;
@@ -755,38 +760,37 @@ public class ProdutorRuralCad extends JInternalFrame {
 	}
 	
 	private void salvar() {
+		if(getPessoa().getDataCadastro() == null){
+			getPessoa().setDataCadastro(Calendar.getInstance());
+		}
+		
+		if(cbClienteContabilidade.getSelectedItem().toString().equals("Sim")){
+			getProdutorRural().setClienteContalidade("S");
+		}else{
+			getProdutorRural().setClienteContalidade("N");
+		}
+		
+		
+	    getProdutorRural().setCodigo(txtCodigo.getText());
+		
+		getProdutorRural().setCodigoPropriedade(txtCodigoPropriedade.getText().replaceAll("\\D", ""));
+		getProdutorRural().setNomePropriedade(txtNomePropriedade.getText());
+		
+		getPessoaJuridica().setCnpj(Utils.formataCpfCnpj(txtCnpj.getText().replaceAll("\\D", "")));
+		getPessoaJuridica().setInscricaoEstadual(txtInscricaoEstadual.getText());
+		getPessoaJuridica().setRazaoSocial(txtRazaoSocial.getText());
+		getPessoaJuridica().setNomeFantasia(txtNomeFantasia.getText());
+		
+		setListaTelefone(((TMlistaTelefone) tbTelefone.getModel()).getList());
+		
+		getEndereco().setCep(txtCep.getText());
+		getEndereco().setUf(cbUf.getSelectedItem().toString());
+		getEndereco().setCidade(cbCidade.getSelectedItem().toString());
+		getEndereco().setLogradouro(txtLogradouro.getText());
+		getEndereco().setComplemento(txtComplemento.getText());
+		getEndereco().setBairro(txtBairro.getText());
+		getEndereco().setNumero(txtNumero.getText());
 		if(validaTela()){
-			if(getPessoa().getDataCadastro() == null){
-				getPessoa().setDataCadastro(Calendar.getInstance());
-			}
-			
-			if(cbClienteContabilidade.getSelectedItem().toString().equals("Sim")){
-				getProdutorRural().setClienteContalidade("S");
-			}else{
-				getProdutorRural().setClienteContalidade("N");
-			}
-			
-			
-		    getProdutorRural().setCodigo(txtCodigo.getText());
-			
-			getProdutorRural().setCodigoPropriedade(txtCodigoPropriedade.getText().replaceAll("\\D", ""));
-			getProdutorRural().setNomePropriedade(txtNomePropriedade.getText());
-			
-			getPessoaJuridica().setCnpj(Utils.formataCpfCnpj(txtCnpj.getText().replaceAll("\\D", "")));
-			getPessoaJuridica().setInscricaoEstadual(txtInscricaoEstadual.getText());
-			getPessoaJuridica().setRazaoSocial(txtRazaoSocial.getText());
-			getPessoaJuridica().setNomeFantasia(txtNomeFantasia.getText());
-			
-			setListaTelefone(((TMlistaTelefone) tbTelefone.getModel()).getList());
-			
-			getEndereco().setCep(txtCep.getText());
-			getEndereco().setUf(cbUf.getSelectedItem().toString());
-			getEndereco().setCidade(cbCidade.getSelectedItem().toString());
-			getEndereco().setLogradouro(txtLogradouro.getText());
-			getEndereco().setComplemento(txtComplemento.getText());
-			getEndereco().setBairro(txtBairro.getText());
-			getEndereco().setNumero(txtNumero.getText());
-			
 			try {
 				if(getPessoaDao().salvaProdutorRural(getPessoa(), getProdutorRural(), getPessoaJuridica(), getListaTelefone(), getEndereco())){
 					Mensagem.informacao("Produtor rural salvo com sucesso!");
@@ -810,10 +814,34 @@ public class ProdutorRuralCad extends JInternalFrame {
     }
 
 	private boolean validaTela() {
+		boolean retorno = true;
+	    final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+	 
+	    final Set<ConstraintViolation<ProdutorRural>> violationsProdutorRural = validator.validate(getProdutorRural());
+	    final Set<ConstraintViolation<PessoaJuridica>> violationsPessoaJuridica = validator.validate(getPessoaJuridica());
+	    
+	    StringBuffer mensagem = new StringBuffer();
+	    for (ConstraintViolation violation : violationsProdutorRural) {
+	    	mensagem.append("\n").append(violation.getMessage());
+        }
+	    
+	    for (ConstraintViolation violation : violationsPessoaJuridica) {
+	    	mensagem.append("\n").append(violation.getMessage());
+        }
+
+	    if (!mensagem.toString().isEmpty()) {
+	    	Mensagem.informacao(mensagem.toString());
+	    	retorno = false;
+	    }
+	    return retorno;
+	}
+
+	/*
+	private boolean validaTela() {
 		//validarCnpj()
 		return true;
 	}
-	
+	*/
 	private void incluirTelefone() {
 		if(validaTelefone()){
 			if(isAlterando){

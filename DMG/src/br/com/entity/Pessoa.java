@@ -22,7 +22,7 @@ public class Pessoa implements Serializable{
 	@Column(name = "ID")
 	private Long id;
 	
-	@NotNull
+	@NotNull(message="Informe Data de Cadastro!")
 	@Column(name = "DATA_CADASTRO")
 	private Calendar dataCadastro;
 	
