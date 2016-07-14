@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import javax.swing.SwingConstants;
 
+import br.com.classes.Animais;
 import br.com.util.AN;
 import br.com.util.JTextData;
 import br.com.util.JTextFieldFocu;
@@ -20,31 +21,25 @@ import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class LancarEstoque extends JInternalFrame {
-	private JTextField textField;
+	private JTextField textQtd;
 	private JTextField textData;
-
+	JComboBox comboProd;
+	JComboBox comboTipo;
+	JComboBox comboSexo;
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					LancarEstoque frame = new LancarEstoque();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
+	
 	/**
 	 * Create the frame.
 	 */
-	public LancarEstoque() {
+	int codCli =0;
+	public LancarEstoque(int codCli) {
+		this.codCli=codCli;
 		setFrameIcon(new ImageIcon(LancarEstoque.class.getResource("/image/icEstoq.png")));
 		setTitle("Lan\u00E7amento Manual de Estoque");
 		getContentPane().setBackground(Color.WHITE);
@@ -56,10 +51,18 @@ public class LancarEstoque extends JInternalFrame {
 		lblProduto.setBounds(0, 25, 96, 21);
 		getContentPane().add(lblProduto);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"0-3 meses", "3-8 meses", "8-12 meses", "12-24 meses", "24-36 meses", "Acima de 36 meses"}));
-		comboBox.setBounds(100, 25, 351, 21);
-		getContentPane().add(comboBox);
+		comboProd = new JComboBox();
+		comboProd.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ENTER){
+					comboSexo.requestFocus();
+				}
+			}
+		});
+		comboProd.setModel(new DefaultComboBoxModel(new String[] {"0-3 meses", "3-8 meses", "8-12 meses", "12-24 meses", "24-36 meses", "Acima de 36 meses"}));
+		comboProd.setBounds(100, 25, 296, 21);
+		getContentPane().add(comboProd);
 		
 		JLabel lblQuantidade = new JLabel("Quantidade:");
 		lblQuantidade.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -73,22 +76,51 @@ public class LancarEstoque extends JInternalFrame {
 		lblTipo.setBounds(0, 76, 96, 21);
 		getContentPane().add(lblTipo);
 		
-		textField = new JTextFieldFocu();
-		textField.setDocument(new SomenteNumeros());
-		textField.setForeground(Color.BLUE);
-		textField.setHorizontalAlignment(SwingConstants.TRAILING);
-		textField.setFont(new Font("Tahoma", Font.BOLD, 13));
-		textField.setText("0");
-		textField.setBounds(100, 51, 86, 20);
-		getContentPane().add(textField);
-		textField.setColumns(10);
+		textQtd = new JTextFieldFocu();
+		textQtd.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ENTER){
+					comboTipo.requestFocus();
+				}
+			}
+		});
+		textQtd.setDocument(new SomenteNumeros());
+		textQtd.setForeground(Color.BLUE);
+		textQtd.setHorizontalAlignment(SwingConstants.TRAILING);
+		textQtd.setFont(new Font("Tahoma", Font.BOLD, 13));
+		textQtd.setText("0");
+		textQtd.setBounds(100, 51, 86, 20);
+		getContentPane().add(textQtd);
+		textQtd.setColumns(10);
 		
-		JComboBox comboTipo = new JComboBox();
+		comboTipo = new JComboBox();
+		comboTipo.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ENTER){
+					textData.requestFocus();
+				}
+			}
+		});
 		comboTipo.setModel(new DefaultComboBoxModel(new String[] {"Entrada", "Sa\u00EDda"}));
 		comboTipo.setBounds(100, 76, 86, 21);
 		getContentPane().add(comboTipo);
 		
 		JButton btnGravar = new JButton("Gravar");
+		btnGravar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				gravar();
+			}
+		});
+		btnGravar.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ENTER){
+					gravar();
+				}
+			}
+		});
 		btnGravar.setIcon(new ImageIcon(LancarEstoque.class.getResource("/image/icSalvar2.png")));
 		btnGravar.setBounds(143, 146, 115, 29);
 		getContentPane().add(btnGravar);
@@ -110,6 +142,14 @@ public class LancarEstoque extends JInternalFrame {
 		getContentPane().add(lblData);
 		
 		textData = new JTextData();
+		textData.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ENTER){
+					btnGravar.requestFocus();
+				}
+			}
+		});
 		textData.setText(AN.dataAtualText());
 		textData.setHorizontalAlignment(SwingConstants.CENTER);
 		textData.setForeground(Color.DARK_GRAY);
@@ -117,6 +157,25 @@ public class LancarEstoque extends JInternalFrame {
 		textData.setColumns(10);
 		textData.setBounds(100, 102, 86, 20);
 		getContentPane().add(textData);
+		
+		JLabel lblSexo = new JLabel("Sexo:");
+		lblSexo.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblSexo.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lblSexo.setBounds(396, 25, 58, 21);
+		getContentPane().add(lblSexo);
+		
+		comboSexo = new JComboBox();
+		comboSexo.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ENTER){
+					textQtd.requestFocus();
+				}
+			}
+		});
+		comboSexo.setModel(new DefaultComboBoxModel(new String[] {"M", "F"}));
+		comboSexo.setBounds(460, 25, 51, 21);
+		getContentPane().add(comboSexo);
 		setIconifiable(true);
 		setBounds(100, 100, 537, 228);
 
@@ -129,5 +188,46 @@ public class LancarEstoque extends JInternalFrame {
 			Inicio.estoque.setSelected(true);
 			Estoque.setBotoes(true);
 		}catch(Exception e){}
+	}
+	Animais animais=null;
+	public  Animais a(){
+		if(animais==null){
+			animais = new Animais();
+		}
+		return animais;
+	}
+	public void gravar(){
+		String prod = comboProd.getSelectedItem().toString();
+		String sexo = comboSexo.getSelectedItem().toString();
+		int qtd = AN.stringPInt(textQtd.getText());
+		String tipo = comboTipo.getSelectedItem().toString();
+		if(qtd>0){
+			if(!tipo.equals("Entrada")){
+				qtd = qtd*-1;
+			}
+			String dataMov = AN.dataPMySQL(textData.getText());
+			if(AN.jOptionPaneQuestion("Deseja Realmente Incluir no Estoque?")==0){
+				boolean a = a().incluirEstoque(prod, qtd, codCli, dataMov, sexo);
+				if(a==true){
+					Estoque.atualizaTable();
+					AN.jOptionPaneInformation("Produto Incluso no Estoque com Sucesso!");
+				}
+			}
+		}else{
+			AN.jOptionPaneInformation("Informe uma Quantidade!");
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 }

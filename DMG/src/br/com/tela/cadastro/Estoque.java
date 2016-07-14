@@ -291,7 +291,7 @@ public class Estoque extends JInternalFrame {
 		JLabel lblSubtotal = new JLabel("Subtotal:");
 		lblSubtotal.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblSubtotal.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblSubtotal.setBounds(660, 368, 152, 21);
+		lblSubtotal.setBounds(657, 368, 221, 21);
 		getContentPane().add(lblSubtotal);
 		
 		textTotal = new JTextField();
@@ -302,7 +302,7 @@ public class Estoque extends JInternalFrame {
 		textTotal.setBackground(new Color(0, 0, 128));
 		textTotal.setEditable(false);
 		textTotal.setColumns(10);
-		textTotal.setBounds(817, 368, 138, 20);
+		textTotal.setBounds(881, 368, 74, 20);
 		getContentPane().add(textTotal);
 		atualizaTable();
 	}
@@ -318,7 +318,7 @@ public class Estoque extends JInternalFrame {
 	}
 	static MudarDeEra mudaDeEra = null;
 	public void mudarDeEra(){
-		mudaDeEra = new MudarDeEra();
+		mudaDeEra = new MudarDeEra(codCli);
 		Inicio.addTela(mudaDeEra);
 		mudaDeEra.setVisible(true);
 		try{
@@ -329,7 +329,7 @@ public class Estoque extends JInternalFrame {
 	//
 	static LancarEstoque lancarEstoque =null;
 	public void lancar(){
-		lancarEstoque = new LancarEstoque();
+		lancarEstoque = new LancarEstoque(codCli);
 		Inicio.addTela(lancarEstoque);
 		lancarEstoque.setVisible(true);
 		try{
@@ -551,18 +551,18 @@ public class Estoque extends JInternalFrame {
 					text2436F.setText(totais[9]);
 					text36M.setText(totais[10]);
 					text36F.setText(totais[11]);
-					textTotal.setText(String.valueOf(AN.stringPInt(totais[0])+
-							AN.stringPInt(totais[1])+
-							AN.stringPInt(totais[2])+
-							AN.stringPInt(totais[3])+
-							AN.stringPInt(totais[4])+
-							AN.stringPInt(totais[5])+
-							AN.stringPInt(totais[6])+
-							AN.stringPInt(totais[7])+
-							AN.stringPInt(totais[8])+
-							AN.stringPInt(totais[9])+
-							AN.stringPInt(totais[10])+
-							AN.stringPInt(totais[11])));
+					textTotal.setText(String.valueOf(Integer.parseInt(totais[0])+
+							Integer.parseInt(totais[1])+
+							Integer.parseInt(totais[2])+
+							Integer.parseInt(totais[3])+
+							Integer.parseInt(totais[4])+
+							Integer.parseInt(totais[5])+
+							Integer.parseInt(totais[6])+
+							Integer.parseInt(totais[7])+
+							Integer.parseInt(totais[8])+
+							Integer.parseInt(totais[9])+
+							Integer.parseInt(totais[10])+
+							Integer.parseInt(totais[11])));
 					
 				}else{
 					lblMovimentaoDeEstoque.setText("Movimenta\u00E7\u00E3o de Estoque (0)");

@@ -129,6 +129,32 @@ public class NotaFiscal {
 		return ret;
 	}
 	//
+	public boolean excluirNotaFiscal(int nf, int codCli) {
+		try {
+			oConn = Conexao.abrirConexao();
+			stmt = oConn.createStatement();
+			boolean rs = stmt.execute("DELETE FROM nota_fiscal WHERE numero="+nf+" and cliente_id="+codCli);
+			 rs = stmt.execute("DELETE FROM produto_nf WHERE cliente_id="+codCli+" and nota_fiscal="+nf);
+			 rs = stmt.execute("DELETE FROM animais WHERE nota_fiscal="+nf+" and cliente_id="+codCli);
+			return true;
+		} catch (Exception e) {
+			System.out.println("Erro ao Excluir o Cliente do Romaneio do BD!");
+			return false;
+		} finally {
+			Conexao.fecharConexao();
+			try {
+				oConn.close();
+			} catch (Exception e) {
+			}
+			// try{rs.close();}catch(Exception e){}
+			try {
+				stmt.close();
+			} catch (Exception e) {
+			}
+		}
+
+	}
+	//
 	public boolean incluir() {
 		try {
 			oConn = (Connection) Conexao.abrirConexao();
@@ -139,9 +165,9 @@ public class NotaFiscal {
 					", '"+dataEm+"', '"+dataEnt+"','','"+tipo+"','"+natOp+"' )");
 			
 			for(int i=0; i<prods.length;i++){
-				rs = stmt.execute("INSERT INTO produto_nf(produto_id, qtd, vlr_unit, total, nota_fiscal) "
+				rs = stmt.execute("INSERT INTO produto_nf(produto_id, qtd, vlr_unit, total, nota_fiscal, cliente_id) "
 						+ "VALUES ('" + prods[i][0]+ "',"+AN.stringPDouble( prods[i][2])+","+AN.stringPDouble( prods[i][3])+
-						","+AN.stringPDouble( prods[i][5])+","+numero+" )");
+						","+AN.stringPDouble( prods[i][5])+","+numero+","+codCli+" )");
 				String sexo = prods[i][4];
 				double qtdEst = AN.stringPDouble( prods[i][2]);
 				if(tipo.equals("SAÍDA")){

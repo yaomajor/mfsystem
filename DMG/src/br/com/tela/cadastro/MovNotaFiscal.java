@@ -176,6 +176,11 @@ public class MovNotaFiscal extends JInternalFrame {
 		btnAlterar.setIcon(new ImageIcon(MovNotaFiscal.class.getResource("/image/icAlt.png")));
 		
 		JButton btnExcluir = new JButton("Excluir");
+		btnExcluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				excluir();
+			}
+		});
 		btnExcluir.setBounds(286, 0, 135, 32);
 		panel.add(btnExcluir);
 		btnExcluir.setIcon(new ImageIcon(MovNotaFiscal.class.getResource("/image/icExcluir.png")));
@@ -416,5 +421,25 @@ public class MovNotaFiscal extends JInternalFrame {
 	}
 	public static void setBotoes(boolean a){
 		panel.setVisible(a);
+	}
+	
+	public void excluir(){
+		int nf = 0;
+		try{nf = AN.stringPInt(table.getValueAt(linhaSel, 0).toString());}catch(Exception e){}
+		if(nf>0){
+			if(AN.jOptionPaneQuestion("Deseja Realmente Excluir a Nota Fiscal: "+nf+"?")==0){
+				if(AN.jOptionPaneQuestion("Isso afetará a Movimentação do Estoque, deseja Continuar ?")==0){
+					boolean a = nF().excluirNotaFiscal(nf, codCli);
+					if(a==true){
+						atualizaTable();
+						AN.jOptionPaneInformation("Nota Fiscal Excluída com Sucesso!");
+					}
+				}
+			}
+		}else{
+			AN.jOptionPaneAlert("Selecione uma Nota Fiscal para Excluir!");
+		}
+		
+		
 	}
 }

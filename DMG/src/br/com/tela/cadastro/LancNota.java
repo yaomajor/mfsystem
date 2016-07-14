@@ -68,6 +68,7 @@ public class LancNota extends JInternalFrame {
 	
 	public LancNota(String op, int nf) {
 		this.nf=nf;
+		this.op=op;
 		codCli = AN.stringPInt(AN.retAteTraco(Inicio.labelCliente.getText()));
 		String title = op.equals("Incluir")?"INCLUIR - Nota Fiscal":op.equals("Alterar")?"ALTERAR - Nota Fiscal":"VISUALIZAR - Nota Fiscal";
 		setTitle(title);
