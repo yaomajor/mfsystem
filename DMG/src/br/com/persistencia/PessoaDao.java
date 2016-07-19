@@ -9,6 +9,8 @@ import javax.persistence.Query;
 import javax.persistence.RollbackException;
 import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.lang.StringUtils;
+
 import br.com.bancodedados.Conexao;
 import br.com.bancodedados.Dao;
 import br.com.entity.Endereco;
@@ -53,18 +55,24 @@ public class PessoaDao extends Dao<Pessoa>{
             
             for(Telefone telefone : listaTelefone){
             	telefone.setPessoa(pessoa);
-            	if(telefone.getId() == null){
+            	if(telefone.getId() == null && telefone.getNumero() != null){
             		em.persist(telefone);
             	}else{
 	            	em.merge(telefone);
 	            }
             }
 
-            if(endereco.getId() == null){
+            if(endereco.getId() == null && StringUtils.isNotBlank(endereco.getLogradouro())){
             	endereco.setPessoa(pessoa);
             	em.persist(endereco);
             }else{
-            	em.merge(endereco);
+            	if(endereco.getId() != null && StringUtils.isBlank(endereco.getLogradouro()) && StringUtils.isBlank(endereco.getBairro()) 
+            			&& StringUtils.isBlank(endereco.getNumero())){
+            		em.remove(em.getReference(Endereco.class, endereco.getId()));
+            	}else if(endereco.getId() != null && StringUtils.isNotBlank(endereco.getLogradouro()) && StringUtils.isNotBlank(endereco.getBairro()) 
+            			&& StringUtils.isNotBlank(endereco.getNumero())){
+            		em.merge(endereco);
+            	}
             }
             
             em.getTransaction().commit();

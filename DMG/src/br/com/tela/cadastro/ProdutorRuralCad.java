@@ -167,7 +167,8 @@ public class ProdutorRuralCad extends JInternalFrame {
 			setPessoaJuridica(getProdutorRural().getPessoaJuridica());
 		}
 		
-		setPessoa(getEndereco().getPessoa());
+		setPessoa(getPessoaJuridica().getPessoa());
+		
 		
 		if(getProdutorRural() != null && getProdutorRural().getId() != null && getProdutorRural().getPessoaJuridica().getPessoa().getDataCadastro() != null){
 			SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -285,7 +286,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 	private void eventos() {
 		txtCnpj.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
-				if(txtCnpj.getText() != null){
+				if(StringUtils.isNotBlank(txtCnpj.getText())){
 					getPessoaJuridica().setCnpj(Utils.formataCpfCnpj(txtCnpj.getText().replaceAll("\\D", "")));
 					try {
 						setProdutorRural(getProdutorRuralDao().getProdutoRural(getPessoaJuridica()));
@@ -316,7 +317,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 		txtCodigo.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
             	try {
-        			if(getProdutorRural().getId() == null && txtCodigo.getText() != null){
+        			if(getProdutorRural().getId() == null && StringUtils.isNotBlank(txtCodigo.getText())){
 						setProdutorRural(getProdutorRuralDao().getProdutoRuralPorCodigo(txtCodigo.getText()));
 						if(getProdutorRural() != null && getProdutorRural().getId() != null){
 							Mensagem.informacao("Codigo : " + getProdutorRural().getCodigo()  
@@ -364,33 +365,35 @@ public class ProdutorRuralCad extends JInternalFrame {
             public void focusLost(java.awt.event.FocusEvent evt) {
             	ViaCEPClient client = new ViaCEPClient();
         		try {
-					ViaCEPEndereco endereco = client.getEndereco(txtCep.getText());
-					if(endereco != null && endereco.getCep() != null){
-						
-						if(endereco.getUf() != null){
-							for (int i = 0; i < cbUf.getItemCount(); i++) {
-								if (cbUf.getItemAt(i).equals(endereco.getUf())) {
-									cbUf.setSelectedIndex(i);
-								}
-							}
-						}
-						
-						carregaComboCidade(endereco.getUf());
-						
-						if(endereco.getLocalidade() != null){
-							for (int i = 0; i < cbCidade.getItemCount(); i++) {
-								if (cbCidade.getItemAt(i).equals(endereco.getLocalidade())) {
-									cbCidade.setSelectedIndex(i);
-								}
-							}
-						}
-						
-						txtLogradouro.setText(endereco.getLogradouro());
-						if(StringUtils.isNotBlank(endereco.getComplemento())){
-							txtComplemento.setText(endereco.getComplemento());
-						}						
-						txtBairro.setText(endereco.getBairro());
-					}
+        			if(StringUtils.isNotBlank(txtCep.getText())){
+        				ViaCEPEndereco endereco = client.getEndereco(txtCep.getText());
+    					if(endereco != null && endereco.getCep() != null){
+    						
+    						if(endereco.getUf() != null){
+    							for (int i = 0; i < cbUf.getItemCount(); i++) {
+    								if (cbUf.getItemAt(i).equals(endereco.getUf())) {
+    									cbUf.setSelectedIndex(i);
+    								}
+    							}
+    						}
+    						
+    						carregaComboCidade(endereco.getUf());
+    						
+    						if(endereco.getLocalidade() != null){
+    							for (int i = 0; i < cbCidade.getItemCount(); i++) {
+    								if (cbCidade.getItemAt(i).equals(endereco.getLocalidade())) {
+    									cbCidade.setSelectedIndex(i);
+    								}
+    							}
+    						}
+    						
+    						txtLogradouro.setText(endereco.getLogradouro());
+    						if(StringUtils.isNotBlank(endereco.getComplemento())){
+    							txtComplemento.setText(endereco.getComplemento());
+    						}						
+    						txtBairro.setText(endereco.getBairro());
+    					}
+        			}
 				} catch (IOException e) {
 					Mensagem.erro("Não foi possível obter o endereco");
 				}
@@ -630,16 +633,16 @@ public class ProdutorRuralCad extends JInternalFrame {
 		label_10.setFont(new Font("Tahoma", Font.BOLD, 11));
 		
 		cbUf = new JComboBox();
-		cbUf.setBounds(38, 11, 42, 20);
+		cbUf.setBounds(27, 11, 95, 20);
 		panelEndereco.add(cbUf);
 		
 		JLabel label_11 = new JLabel("Cidade :");
-		label_11.setBounds(101, 14, 52, 14);
+		label_11.setBounds(126, 14, 52, 14);
 		panelEndereco.add(label_11);
 		label_11.setFont(new Font("Tahoma", Font.BOLD, 11));
 		
 		cbCidade = new JComboBox();
-		cbCidade.setBounds(151, 11, 424, 20);
+		cbCidade.setBounds(175, 11, 400, 20);
 		panelEndereco.add(cbCidade);
 		
 		JLabel label_12 = new JLabel("Logradouro :");
@@ -724,6 +727,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 	@SuppressWarnings("unchecked")
 	private void carregaComboUf() {
 		try {
+			cbUf.addItem("Selecione");
 			setListaUf(getUfDao().getTodos("sigla"));
 			for(Uf uf : getListaUf()){
 				cbUf.addItem(uf.getSigla());
@@ -783,13 +787,46 @@ public class ProdutorRuralCad extends JInternalFrame {
 		
 		setListaTelefone(((TMlistaTelefone) tbTelefone.getModel()).getList());
 		
-		getEndereco().setCep(txtCep.getText());
-		getEndereco().setUf(cbUf.getSelectedItem().toString());
-		getEndereco().setCidade(cbCidade.getSelectedItem().toString());
-		getEndereco().setLogradouro(txtLogradouro.getText());
-		getEndereco().setComplemento(txtComplemento.getText());
-		getEndereco().setBairro(txtBairro.getText());
-		getEndereco().setNumero(txtNumero.getText());
+		if(StringUtils.isNotBlank(txtCep.getText())){
+			getEndereco().setCep(txtCep.getText());
+		}else{
+			getEndereco().setCep(null);
+		}
+		
+		if(cbUf.getSelectedItem() != null && !cbUf.getSelectedItem().equals("Selecione") &&
+				StringUtils.isNotBlank(cbUf.getSelectedItem().toString())){
+			getEndereco().setUf(cbUf.getSelectedItem().toString());
+		}
+		
+		if(cbCidade.getSelectedItem() != null && !cbCidade.getSelectedItem().equals("Selecione") &&
+				StringUtils.isNotBlank(cbCidade.getSelectedItem().toString())){
+			getEndereco().setCidade(cbCidade.getSelectedItem().toString());
+		}
+		
+		if(StringUtils.isNotBlank(txtLogradouro.getText())){
+			getEndereco().setLogradouro(txtLogradouro.getText());
+		}else{
+			getEndereco().setLogradouro(null);
+		}
+		
+		if(StringUtils.isNotBlank(txtComplemento.getText())){
+			getEndereco().setComplemento(txtComplemento.getText());
+		}else{
+			getEndereco().setComplemento(null);
+		}
+		
+		if(StringUtils.isNotBlank(txtBairro.getText())){
+			getEndereco().setBairro(txtBairro.getText());
+		}else{
+			getEndereco().setBairro(null);
+		}
+		
+		if(StringUtils.isNotBlank(txtNumero.getText())){
+			getEndereco().setNumero(txtNumero.getText());
+		}else{
+			getEndereco().setNumero(null);
+		}
+		
 		if(validaTela()){
 			try {
 				if(getPessoaDao().salvaProdutorRural(getPessoa(), getProdutorRural(), getPessoaJuridica(), getListaTelefone(), getEndereco())){
@@ -828,11 +865,24 @@ public class ProdutorRuralCad extends JInternalFrame {
 	    for (ConstraintViolation violation : violationsPessoaJuridica) {
 	    	mensagem.append("\n").append(violation.getMessage());
         }
-
+	    
+	    if(StringUtils.isNotBlank(getEndereco().getLogradouro())){
+	    	final Set<ConstraintViolation<Endereco>> violationsEndereco = validator.validate(getEndereco());
+	    	for (ConstraintViolation violation : violationsEndereco) {
+    	    	mensagem.append("\n").append(violation.getMessage());
+            }
+	    }
+	    
 	    if (!mensagem.toString().isEmpty()) {
-	    	Mensagem.informacao(mensagem.toString());
+	    	Mensagem.aviso(mensagem.toString());
 	    	retorno = false;
 	    }
+	    
+	    if(!validarCnpj()){
+	    	Mensagem.aviso("CNPJ não é valido!!");
+	    	retorno = false;
+	    }
+	    
 	    return retorno;
 	}
 
@@ -875,7 +925,7 @@ public class ProdutorRuralCad extends JInternalFrame {
 			Mensagem.aviso("Prencher numero telefone!!");
 		}else if(StringUtils.isBlank(txtContatoTel.getText())){
 			retorno = false;
-			Mensagem.aviso("Prencher numero telefone!!");
+			Mensagem.aviso("Prencher contato!!");
 		}
 		return retorno;
 	}

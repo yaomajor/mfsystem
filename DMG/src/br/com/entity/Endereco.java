@@ -26,13 +26,13 @@ public class Endereco implements Serializable{
 	@Column(name = "ID")
 	private Long id;
 	
-	@NotNull
+	@NotNull(message="Informe o Logradouro!")
 	@Size(min = 1, max = 100)
 	@Column(name = "LOGRADOURO")
 	private String logradouro;
 	
+	@NotNull(message="Informe o Numero(endereço)!")
 	@Column(name = "NUMERO")
-	@NotNull
 	@Size(min = 1, max = 20)
 	private String numero;
 
@@ -40,32 +40,30 @@ public class Endereco implements Serializable{
 	@Size(min = 0, max = 50)
 	private String complemento;
 
+	@NotNull(message="Informe o Bairro!")
 	@Column(name = "BAIRRO")
-	@NotNull
 	@Size(min = 1, max = 100)
 	private String bairro;
 
+	@NotNull(message="Informe a Cidade!")
 	@Column(name = "CIDADE")
-	@NotNull
 	@Size(min = 1, max = 100)
 	private String cidade;
 
+	@NotNull(message="Informe a UF!")
 	@Column(name = "UF")
-	@NotNull
 	@Size(min = 1, max = 2)
 	private String uf;
 
+	@NotNull(message="Informe o CEP!")
 	@Column(name = "CEP")
-	@NotNull
 	@Size(min = 1, max = 9)
 	private String cep;
 	
-	@NotNull
 	@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "ID_PESSOA")
 	private Pessoa pessoa;
 	
-	@NotNull
 	@Version
 	@Column(name = "JVERSION")
 	private Long jversion;

@@ -28,9 +28,8 @@ public class TelefoneDao extends Dao<Telefone>{
 		EntityManager em = Conexao.getConexaoEM();
 		try {
 			Query query = em.createQuery("select object(telefone) from Telefone AS telefone "
-										//+ "LEFT JOIN FETCH telefone.pessoa "
-										+ "WHERE telefone.pessoa = :pessoa "
-										+ "ORDER BY telefone.id").setParameter("pessoa", pessoa);
+										+ "WHERE telefone.pessoa.id = :pessoa "
+										+ "ORDER BY telefone.id").setParameter("pessoa", pessoa.getId());
 			System.out.println("pessoa.getId() : " + pessoa.getId());
 			
 			listaRetorno = query.getResultList();
