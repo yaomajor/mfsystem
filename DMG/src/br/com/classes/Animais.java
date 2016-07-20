@@ -1,10 +1,11 @@
 package br.com.classes;
 
-import java.sql.Connection;
+import java.sql.Connection; 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import br.com.tela.cadastro.Inicio;
 import br.com.util.AN;
 import br.com.util.Conexao;
 
@@ -319,7 +320,8 @@ public class Animais {
 						+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,0,0,"+qtdEst+",0,'"+dataEm+"')");
 			}
 			
-			
+			rs = stmt.execute("INSERT INTO ESPIAO(USUARIO, DATA_LANC, OBS) VALUES ('" +Inicio.usuario+ "',now(),'Mudou era De: "+de+" Para: "+para+""
+					+ " Quantidade: "+qtdEst+" Sexo: "+sexo+" do Cliente: "+codCli+"'   )");
 			return true;
 		} catch (Exception e) {
 			try {
@@ -402,7 +404,8 @@ public class Animais {
 						+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,0,0,"+qtdEst+",0,'"+dataEm+"')");
 			}
 			
-			
+			rs = stmt.execute("INSERT INTO ESPIAO(USUARIO, DATA_LANC, OBS) VALUES ('" +Inicio.usuario+ "',now(),'Incluiu no Estoque : "+de+" "
+					+ "Quantidade: "+qtdEst+" sexo: "+sexo+" do Cliente: "+codCli+" '  )");
 			return true;
 		} catch (Exception e) {
 			try {

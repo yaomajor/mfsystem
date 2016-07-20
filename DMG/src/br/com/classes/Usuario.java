@@ -111,7 +111,41 @@ public class Usuario {
 		
 		return ret;
 	}
-	
+	//
+	public String[][] buscarUsuarios(){
+		String[][] ret = null;
+		try{
+			oConn = (Connection) Conexao.abrirConexao();			
+			stmt = (Statement) oConn.createStatement();			
+			rs = stmt.executeQuery("Select count(login) as total from usuario c ");
+			int total =0;
+			if(rs.next()){
+				total = rs.getInt("total");				
+			}
+			if(total>0){
+				ret = new String[total][4];
+				rs = stmt.executeQuery("Select login, senha, pode_mudar_era, pode_lanc_est  from usuario c ");
+				int i=0;
+				while(rs.next()){
+					ret[i][0] = rs.getString("login");
+					ret[i][1] = rs.getString("senha");
+					ret[i][2] = rs.getString("pode_mudar_era");
+					ret[i][3] = rs.getString("pode_lanc_est");
+					i++;
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally{
+			Conexao.fecharConexao();
+			try{rs.close();}catch(Exception e){}
+			try{stmt.close();}catch(Exception e){}
+			try{oConn.close();}catch(Exception e){}
+		}
+		
+		return ret;
+	}
 	public String pxoID(){
 		String ret = "000001";
 		try{

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import br.com.tela.cadastro.Inicio;
 import br.com.util.AN;
 import br.com.util.Conexao;
 
@@ -17,6 +18,7 @@ public class NotaFiscal {
 	private String[][] prods = null;
 	private int notaFiscalId = 0;
 	private int codCli = 0;
+	private int cfop = 0;
 	private int numero = 0;
 	private int codCompVend = 0;
 	private double qtdEnt = 0;
@@ -28,6 +30,12 @@ public class NotaFiscal {
 	private String tipo = "";
 	private String natOp = "";
 	
+	public int getCfop() {
+		return cfop;
+	}
+	public void setCfop(int cfop) {
+		this.cfop = cfop;
+	}
 	public String[][] getProds() {
 		return prods;
 	}
@@ -129,16 +137,25 @@ public class NotaFiscal {
 		return ret;
 	}
 	//
-	public boolean excluirNotaFiscal(int nf, int codCli) {
+	public boolean excluirNotaFiscal(int nf, int codCli, String op) {
 		try {
 			oConn = Conexao.abrirConexao();
 			stmt = oConn.createStatement();
 			boolean rs = stmt.execute("DELETE FROM nota_fiscal WHERE numero="+nf+" and cliente_id="+codCli);
 			 rs = stmt.execute("DELETE FROM produto_nf WHERE cliente_id="+codCli+" and nota_fiscal="+nf);
 			 rs = stmt.execute("DELETE FROM animais WHERE nota_fiscal="+nf+" and cliente_id="+codCli);
+			 ////
+			if(!op.equals("Alterar")){
+				rs = stmt.execute("INSERT INTO ESPIAO(USUARIO, DATA_LANC, OBS) VALUES ('" +Inicio.usuario+ "',now()3,'Excluiu a NF:"+nf+
+						 " do Cliente: "+codCli+"' )");
+			}
+	
+			 
+			 
 			return true;
 		} catch (Exception e) {
 			System.out.println("Erro ao Excluir o Cliente do Romaneio do BD!");
+			e.printStackTrace();
 			return false;
 		} finally {
 			Conexao.fecharConexao();
@@ -155,14 +172,14 @@ public class NotaFiscal {
 
 	}
 	//
-	public boolean incluir() {
+	public boolean incluir(String op) {
 		try {
 			oConn = (Connection) Conexao.abrirConexao();
 			oConn.setAutoCommit(false);
 			stmt = (Statement) oConn.createStatement();
 			boolean rs = stmt.execute("INSERT INTO NOTA_FISCAL(CLIENTE_ID, COMP_VEND_ID, numero, qtd_ent, qtd_sai, total, data_em, "
-					+ "data_ent, razao_transp, tipo, nat_op) VALUES (" + codCli+ ","+codCompVend+","+numero+","+qtdEnt+","+qtdSai+","+total+
-					", '"+dataEm+"', '"+dataEnt+"','','"+tipo+"','"+natOp+"' )");
+					+ "data_ent, razao_transp, tipo, nat_op, CFOP) VALUES (" + codCli+ ","+codCompVend+","+numero+","+qtdEnt+","+qtdSai+","+total+
+					", '"+dataEm+"', '"+dataEnt+"','','"+tipo+"','"+natOp+"',"+cfop+" )");
 			
 			for(int i=0; i<prods.length;i++){
 				rs = stmt.execute("INSERT INTO produto_nf(produto_id, qtd, vlr_unit, total, nota_fiscal, cliente_id, sexo, un) "
@@ -222,7 +239,11 @@ public class NotaFiscal {
 							+ "doze_a_vinte_q_m, doze_a_vinte_q_f, vinte_q_a_trinta_s_m, vinte_q_a_trinta_s_f, acima_trinta_s_m, acima_trinta_s_f, nota_fiscal, data_mov) "
 							+ "VALUES ("+codCli+",0,0,0,0,0,0,0,0,0,0,0,"+qtdEst+", "+numero+",'"+dataEm+"')");
 				}
-				//				
+				//			
+				
+				
+				 rs = stmt.execute("INSERT INTO ESPIAO(USUARIO, DATA_LANC, OBS) VALUES ('" +Inicio.usuario+ "',now(),'"+op+" a NF:"+numero+
+						 " do Cliente: "+codCli+" valor Total:"+total+"'  )");
 			}
 			
 			return true;
@@ -307,7 +328,7 @@ public class NotaFiscal {
 			stmt = (Statement) oConn.createStatement();
 			String sql = "SELECT nf.numero, nf.nat_op, pj2.id_pessoa, pj2.razao_social, DATE_FORMAT(nf.data_em, '%d/%m/%Y') as datap, "
 						+ "DATE_FORMAT(nf.data_ent, '%d/%m/%Y') as datae, "
-		+ "if(nf.qtd_ent>0, nf.qtd_ent,nf.qtd_sai) as qtd, nf.tipo, "
+		+ "if(nf.qtd_ent>0, nf.qtd_ent,nf.qtd_sai) as qtd, nf.tipo, nf.cfop, "
 		+ "nf.total FROM nota_fiscal nf "
 		+ "left join pessoa_juridica pj on pj.id_pessoa=nf.cliente_id "
 		+ " left join pessoa_juridica pj2 on pj2.id_pessoa=nf.comp_vend_id "
@@ -315,7 +336,7 @@ public class NotaFiscal {
 			rs = (ResultSet) stmt.executeQuery(sql);
 			System.out.println(sql);
 			if (rs.next()) {
-				ret = new String[8];
+				ret = new String[9];
 				ret[0] = AN.seisDigitos(rs.getString("nf.numero"));					
 				String cliente = rs.getString("pj2.razao_social");
 				ret[1] = AN.seisDigitos(rs.getString("pj2.id_pessoa")) + " - " + cliente;
@@ -325,6 +346,7 @@ public class NotaFiscal {
 				ret[5] = rs.getString("nf.tipo");
 				ret[6] = AN.doublePStringRS(rs.getDouble("total"));
 				ret[7] = rs.getString("nf.nat_op");
+				ret[8] = rs.getString("nf.cfop");
 			}
 			
 			

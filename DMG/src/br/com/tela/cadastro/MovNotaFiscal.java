@@ -451,7 +451,7 @@ public class MovNotaFiscal extends JInternalFrame {
 		if(nf>0){
 			if(AN.jOptionPaneQuestion("Deseja Realmente Excluir a Nota Fiscal: "+nf+"?")==0){
 				if(AN.jOptionPaneQuestion("Isso afetará a Movimentação do Estoque, deseja Continuar ?")==0){
-					boolean a = nF().excluirNotaFiscal(nf, codCli);
+					boolean a = nF().excluirNotaFiscal(nf, codCli,"");
 					if(a==true){
 						atualizaTable();
 						AN.jOptionPaneInformation("Nota Fiscal Excluída com Sucesso!");

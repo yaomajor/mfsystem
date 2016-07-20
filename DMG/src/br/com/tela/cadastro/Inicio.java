@@ -11,6 +11,7 @@ import br.com.entity.ProdutorRural;
 import br.com.exception.Excecoes;
 import br.com.persistencia.ProdutorRuralDao;
 import br.com.util.AN;
+import br.com.util.Conexao;
 import br.com.util.Mensagem;
 
 import javax.swing.JDesktopPane;
@@ -34,7 +35,12 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 
 public class Inicio extends JFrame {
-
+	
+	
+	
+	JLabel labelUsuario = null;
+	
+	////-----------------------
 	public static ProdutorRuralConsulta produtorRuralConsulta;
 	public static JLabel labelCliente;
 	private static JButton btnProdutor;
@@ -58,18 +64,7 @@ public class Inicio extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Inicio frame = new Inicio();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	
 	static JButton btnNotaFiscal;
 	static JButton btnUsurio;
 	static JButton btnEstoque;
@@ -78,8 +73,16 @@ public class Inicio extends JFrame {
 	 * Create the frame.
 	 */
 	static JDesktopPane desktopPane;
-	public Inicio() {
-		
+	
+	public static boolean podeMudarEra = false;
+	public static boolean podeLancarEst = false;
+	public static String usuario = "";
+	
+	public Inicio(String us, boolean podeMudarEra, boolean podeLancEst) throws Exception{
+		this.usuario = us;
+		this.podeMudarEra = podeMudarEra;		
+		this.podeLancarEst = podeLancEst;
+		//
 		setTitle("DMG");
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);// Inicializa a Tela
 		// Maximizada
@@ -147,14 +150,14 @@ public class Inicio extends JFrame {
 		label_2.setBounds(43, 20, 143, 23);
 		desktopPane.add(label_2);
 		
-		JLabel label_3 = new JLabel();
-		label_3.setText("");
-		label_3.setSize(new Dimension(187, 23));
-		label_3.setLocation(new Point(172, 4));
-		label_3.setForeground(Color.RED);
-		label_3.setFont(new Font("Dialog", Font.BOLD, 17));
-		label_3.setBounds(186, 20, 187, 23);
-		desktopPane.add(label_3);
+		labelUsuario = new JLabel();
+		labelUsuario.setText(usuario);
+		labelUsuario.setSize(new Dimension(187, 23));
+		labelUsuario.setLocation(new Point(172, 4));
+		labelUsuario.setForeground(Color.RED);
+		labelUsuario.setFont(new Font("Dialog", Font.BOLD, 17));
+		labelUsuario.setBounds(186, 20, 187, 23);
+		desktopPane.add(labelUsuario);
 		
 		JLabel label_4 = new JLabel();
 		label_4.setVerticalTextPosition(SwingConstants.TOP);
@@ -240,6 +243,9 @@ public class Inicio extends JFrame {
 		desktopPane.add(btnNotaFiscal);
 		
 		btnUsurio = new JButton("Usu\u00E1rio");
+		if(podeLancEst==false || podeMudarEra == false){
+			btnUsurio.setEnabled(false);
+		}
 		btnUsurio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				usuario();
@@ -277,7 +283,7 @@ public class Inicio extends JFrame {
 		} catch (Excecoes e1) {
 			Mensagem.erro("Erro ao buscar produtor rural cliente contabil!");
 		}
-		
+		setEmpresa();
 	}
 	//
 	//
@@ -389,5 +395,10 @@ public class Inicio extends JFrame {
 	public static void setEntrou(boolean a){
 		btnEstoque.setEnabled(a);
 		btnNotaFiscal.setEnabled(a);
+	}
+	public void setEmpresa(){
+		if(Conexao.emp.equals("MADSAOPAULO")){
+			
+		}
 	}
 }

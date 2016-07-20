@@ -48,6 +48,8 @@ public class LancNota extends JInternalFrame {
 	private JTextField textQtd;
 	private JTextField textTotal;
 	
+	
+	JComboBox comboCfop;
 	//////-------------------
 	String dataAtual = AN.dataAtualText();
 	/**
@@ -80,6 +82,7 @@ public class LancNota extends JInternalFrame {
 			textEm.setText(ret[2]);
 			textEnt.setText(ret[3]);
 			comboTipo.setSelectedItem(ret[5]);
+			comboCfop.setSelectedItem(ret[8]);
 			tipo();
 			if(textComp.isEditable()){
 				textComp.setText(ret[1]);
@@ -373,7 +376,7 @@ public class LancNota extends JInternalFrame {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){
-					textNatOp.requestFocus();
+					comboCfop.requestFocus();
 				}
 			}
 		});
@@ -381,9 +384,9 @@ public class LancNota extends JInternalFrame {
 		textNF.setBounds(85, 11, 67, 20);
 		getContentPane().add(textNF);
 		
-		JLabel lblNaturezaDeOperao = new JLabel("Natureza de Opera\u00E7\u00E3o:");
+		JLabel lblNaturezaDeOperao = new JLabel("Nat. Op.:");
 		lblNaturezaDeOperao.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblNaturezaDeOperao.setBounds(152, 11, 139, 20);
+		lblNaturezaDeOperao.setBounds(276, 11, 74, 20);
 		getContentPane().add(lblNaturezaDeOperao);
 		
 		textNatOp = new JTextFieldFocu();
@@ -397,7 +400,7 @@ public class LancNota extends JInternalFrame {
 			}
 		});
 		textNatOp.setColumns(10);
-		textNatOp.setBounds(293, 11, 207, 20);
+		textNatOp.setBounds(352, 11, 218, 20);
 		getContentPane().add(textNatOp);
 		
 		JLabel lblEmisso = new JLabel("Emiss\u00E3o:");
@@ -467,6 +470,7 @@ public class LancNota extends JInternalFrame {
 		comboTipo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				tipo();
+				setCfop();
 			}
 		});
 		comboTipo.addKeyListener(new KeyAdapter() {
@@ -496,6 +500,23 @@ public class LancNota extends JInternalFrame {
 		lblTotalDaNota.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblTotalDaNota.setBounds(326, 328, 139, 20);
 		getContentPane().add(lblTotalDaNota);
+		
+		JLabel lblCfop = new JLabel("CFOP:");
+		lblCfop.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblCfop.setBounds(152, 11, 74, 20);
+		getContentPane().add(lblCfop);
+		
+		comboCfop = new <String>JComboBox(AN.retCFOPsCompra());
+		comboCfop.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if(arg0.getKeyCode() == KeyEvent.VK_ENTER){
+					textNatOp.requestFocus();
+				}
+			}
+		});
+		comboCfop.setBounds(227, 11, 67, 20);
+		getContentPane().add(comboCfop);
 		
 		initialize();
 	}
@@ -853,7 +874,7 @@ public class LancNota extends JInternalFrame {
 				if(nfJaUsou==false){
 					if(prods !=null){
 						if(op.equals("Alterar")){
-							nF().excluirNotaFiscal(nf, codCli);
+							nF().excluirNotaFiscal(nf, codCli, op);
 						}
 						String natOp = textNatOp.getText();
 						String dataEm = AN.dataPMySQL(textEm.getText());
@@ -876,7 +897,8 @@ public class LancNota extends JInternalFrame {
 						nF().setTipo(tipo);
 						nF().setNatOp(natOp);
 						nF().setProds(prods);
-						boolean inc = nF().incluir();
+						nF().setCfop(AN.stringPInt(comboCfop.getSelectedItem().toString()));
+						boolean inc = nF().incluir(op);
 						if(inc==true){
 							String msg = op.equals("Incluir")?"Nota Fiscal Inclusa com Sucesso!":"Nota Fiscal Alterada com Sucesso!";
 							AN.jOptionPaneInformation(msg);
@@ -934,6 +956,18 @@ public class LancNota extends JInternalFrame {
 			
 			
 		} catch (Exception e) {
+		}
+	}
+	public void setCfop(){
+		String[] ret = null;
+		if(comboTipo.getSelectedItem().toString().equals("ENTRADA")){
+			ret = AN.retCFOPsCompra();
+		}else{
+			ret = AN.retCFOPsVenda();
+		}
+		comboCfop.removeAllItems();
+		for(int i=0; i<ret.length; i++){
+			comboCfop.addItem(ret[i]);
 		}
 	}
 }

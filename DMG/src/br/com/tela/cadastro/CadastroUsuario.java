@@ -1,6 +1,6 @@
 package br.com.tela.cadastro;
 
-import java.awt.EventQueue;
+import java.awt.EventQueue; 
 
 import javax.swing.JInternalFrame;
 import java.awt.Color;

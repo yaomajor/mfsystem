@@ -152,6 +152,11 @@ public class Estoque extends JInternalFrame {
 		getContentPane().add(panel);
 		
 		JButton btnMudarEra = new JButton("Mudar \u00C9ra");
+		if(Inicio.podeMudarEra==true){
+			btnMudarEra.setEnabled(true);
+		}else{
+			btnMudarEra.setEnabled(false);
+		}
 		btnMudarEra.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mudarDeEra();
@@ -177,6 +182,12 @@ public class Estoque extends JInternalFrame {
 		panel.add(btnFechar);
 		
 		JButton btnIncluir = new JButton("Lan\u00E7ar");
+		if(Inicio.podeLancarEst==true){
+			btnIncluir.setEnabled(true);
+			
+		}else{
+			btnIncluir.setEnabled(false);
+		}
 		btnIncluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				lancar();
