@@ -279,7 +279,7 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 				gerarRelatorio("resumido");
 			}
 		});
-		btnRelatorioResumido.setBounds(161, 140, 135, 32);
+		btnRelatorioResumido.setBounds(161, 140, 156, 32);
 		getContentPane().add(btnRelatorioResumido);
 		
 		JButton btnRelatorioCompleto = new JButton("Relat\u00F3rio Completo");
@@ -288,7 +288,7 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 				gerarRelatorio("completo");
 			}
 		});
-		btnRelatorioCompleto.setBounds(310, 140, 135, 32);
+		btnRelatorioCompleto.setBounds(327, 140, 158, 32);
 		getContentPane().add(btnRelatorioCompleto);
 		btnIncluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
