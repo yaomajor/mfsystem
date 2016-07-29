@@ -29,8 +29,14 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.commons.lang.StringUtils;
 
 import br.com.classes.Cliente;
+import br.com.entity.Endereco;
+import br.com.entity.PessoaJuridica;
 import br.com.entity.ProdutorRural;
+import br.com.persistencia.EnderecoDao;
+import br.com.persistencia.PessoaJuridicaDao;
+import br.com.persistencia.ProdutorRuralDao;
 import br.com.util.AN;
+import br.com.util.Constantes;
 
 import javax.swing.JTextField;
 
@@ -70,6 +76,12 @@ public class F9Cliente extends JDialog {
 	private JButton jButton = null;
 	JButton btnGravar = null;
 	private JButton btnCarregar;
+	
+	private PessoaJuridicaDao pessoaJuridicaDao;
+	private EnderecoDao enderecoDao;
+	
+	private PessoaJuridica pessoaJuridica;
+	private Endereco endereco;
 	
 	/**
 	 * @param owner
@@ -428,6 +440,15 @@ public class F9Cliente extends JDialog {
 					if(cod>0){
 						Inicio.labelCliente.setText(txt);	
 						Inicio.setEntrou(true);
+						int id = Integer.parseInt(jTable.getValueAt(linhaTit, 0).toString());
+						setPessoaJuridica(getPessoaJuridicaDao().getPessoaJuridicaPorPessoa(Integer.toString(id)));
+						if(getPessoaJuridica().getId() != null){
+							Constantes.pessoaJuridica = getPessoaJuridica();
+						}
+						setEndereco(getEnderecoDao().getEnderecoPorPessoa(Integer.toString(id)));
+						if(getEndereco().getId() != null){
+							Constantes.endereco = getEndereco();
+						}
 					}else{
 						Inicio.labelCliente.setText("");
 						Inicio.setEntrou(false);
@@ -482,5 +503,41 @@ public class F9Cliente extends JDialog {
 		sohCliente=false;
 	}
 	
+	public PessoaJuridicaDao getPessoaJuridicaDao() {
+		if(pessoaJuridicaDao == null){
+			pessoaJuridicaDao = new PessoaJuridicaDao();
+		}
+		return pessoaJuridicaDao;
+	}
+	
+	public PessoaJuridica getPessoaJuridica() {
+		if(pessoaJuridica == null){
+			pessoaJuridica = new PessoaJuridica();
+		}
+		return pessoaJuridica;
+	}
+	
+	public void setPessoaJuridica(PessoaJuridica pessoaJuridica) {
+		this.pessoaJuridica = pessoaJuridica;
+	}
+	
+	public EnderecoDao getEnderecoDao() {
+		if(enderecoDao == null){
+			enderecoDao = new EnderecoDao();
+		}
+		return enderecoDao;
+	}
+	
+	public Endereco getEndereco() {
+		if(endereco == null){
+			endereco = new Endereco();
+			setEndereco(new Endereco());
+		}
+		return endereco;
+	}
+	
+	public void setEndereco(Endereco endereco) {
+		this.endereco = endereco;
+	}
 }
 

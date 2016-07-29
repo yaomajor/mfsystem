@@ -37,4 +37,24 @@ public class EnderecoDao extends Dao<Endereco>{
 			Conexao.fechaConexaoEM(em);
 		}
 	}
+	
+public Endereco getEnderecoPorPessoa(String idPessoa) throws Excecoes{
+		
+		EntityManager em = Conexao.getConexaoEM();
+		try {
+			Query query = em.createQuery("select object(endereco) from Endereco AS endereco "
+										+ "WHERE endereco.pessoa.id = :pessoa "
+										+ "ORDER BY endereco.id").setParameter("pessoa", Long.parseLong(idPessoa));
+			
+			return (Endereco) query.getSingleResult();
+						
+		}catch(NoResultException e){	
+			return null;
+			
+		} catch(Exception e) {
+			throw new Excecoes(e,"pesquisarErro");
+		} finally {
+			Conexao.fechaConexaoEM(em);
+		}
+	}
 }

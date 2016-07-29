@@ -277,12 +277,6 @@ public class Inicio extends JFrame {
 		label_11.setBounds(617, 170, 269, 113);
 		desktopPane.add(label_11);
 		
-		try {
-			setListaProdutorRural(getProdutorRuralDao().getListaProdutoRuralContabilidade());
-			System.out.println("getProdutorRuralDao().getTodos(nomePropriedade) : " + getProdutorRuralDao().getTodos("nomePropriedade").size());
-		} catch (Excecoes e1) {
-			Mensagem.erro("Erro ao buscar produtor rural cliente contabil!");
-		}
 		setEmpresa();
 	}
 	//

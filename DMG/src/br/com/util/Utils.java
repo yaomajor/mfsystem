@@ -369,4 +369,14 @@ public class Utils {
 	  }
 	  return ret;
 	 }
+    
+    /**
+     * Metodo que formata uma data em texto no padrao dd/MM/aaaa HH:mm:ss
+     *
+     * @param data o objeto Date.
+     * @return uma String formatada ou null caso a data nao seja valida.
+     */
+    public static String getDataHora(Date data) {
+        return formataData(data, "dd/MM/yyyy HH:mm:ss");
+    }
 }

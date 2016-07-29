@@ -8,6 +8,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import br.com.classes.Usuario;
+import br.com.exception.Excecoes;
+import br.com.persistencia.UfDao;
 import br.com.util.AN;
 import br.com.util.Conexao;
 import br.com.util.MD5;
@@ -190,6 +192,12 @@ public class Login extends JFrame {
 		label_6.setBounds(0, 127, 3, 161);
 		contentPane.add(label_6);
 		this.setLocationRelativeTo(null);//Centro da tela
+		
+		try {
+			UfDao ufDao = new UfDao();
+			ufDao.getTodos("nome");
+		} catch (Excecoes e) {
+		}
 	}
 	public void entrar(){
 		if(us!=null){

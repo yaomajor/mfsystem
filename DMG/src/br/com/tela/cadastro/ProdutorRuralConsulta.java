@@ -22,8 +22,16 @@ import br.com.persistencia.PessoaJuridicaDao;
 import br.com.persistencia.ProdutorRuralDao;
 import br.com.persistencia.TelefoneDao;
 import br.com.tablemodel.TMlistaProdutorRural;
+import br.com.util.Constantes;
 import br.com.util.Mensagem;
 import br.com.util.Utils;
+import br.com.vo.ProdutorRuralVO;
+import br.com.vo.TelefoneVO;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,8 +39,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
@@ -54,6 +67,7 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	private PessoaJuridica pessoaJuridica;
 	private ProdutorRural produtorRural;
 	private Endereco endereco;
+	private Telefone telefone;
 	
 	private PessoaJuridicaDao pessoaJuridicaDao;
 	private ProdutorRuralDao produtorRuralDao;
@@ -258,6 +272,24 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 		txtCodigoPropriedade.setColumns(10);
 		txtCodigoPropriedade.setBounds(539, 11, 101, 20);
 		panel.add(txtCodigoPropriedade);
+		
+		JButton btnRelatorioResumido = new JButton("Relat\u00F3rio Resumido");
+		btnRelatorioResumido.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				gerarRelatorio("resumido");
+			}
+		});
+		btnRelatorioResumido.setBounds(161, 140, 135, 32);
+		getContentPane().add(btnRelatorioResumido);
+		
+		JButton btnRelatorioCompleto = new JButton("Relat\u00F3rio Completo");
+		btnRelatorioCompleto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				gerarRelatorio("completo");
+			}
+		});
+		btnRelatorioCompleto.setBounds(310, 140, 135, 32);
+		getContentPane().add(btnRelatorioCompleto);
 		btnIncluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				incluir();
@@ -359,6 +391,120 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 			}
 		}
 		
+	}
+	private void gerarRelatorio(String tipoRelatorio) {
+		if(Constantes.pessoaJuridica.getId() != null){
+			setListaProdutorRural(((TMlistaProdutorRural) tbProdutor.getModel()).getLista());
+			if(getListaProdutorRural().isEmpty()){
+				Mensagem.aviso("Faça uma pesquisa antes de gerar o relatório!");
+			}else{
+				List<ProdutorRuralVO> listaVO = new ArrayList<ProdutorRuralVO>();
+				for(ProdutorRural produtorRural : getListaProdutorRural()){
+					ProdutorRuralVO produtorRuralVO = new ProdutorRuralVO();
+					if(StringUtils.isNotBlank(produtorRural.getCodigo())){
+						produtorRuralVO.setCodigo(produtorRural.getCodigo());
+					}
+					produtorRuralVO.setRazaoSocial(produtorRural.getPessoaJuridica().getRazaoSocial());
+					produtorRuralVO.setCnpj(produtorRural.getPessoaJuridica().getCnpj().replaceAll("\\D", ""));
+					produtorRuralVO.setIe(produtorRural.getPessoaJuridica().getInscricaoEstadual().replaceAll("\\D", ""));
+					produtorRuralVO.setCodigoPropriedade(produtorRural.getCodigoPropriedade());
+					produtorRuralVO.setNomePropriedade(produtorRural.getNomePropriedade());
+					produtorRuralVO.setDataCadastro(Utils.getDataHora(produtorRural.getPessoaJuridica().getPessoa().getDataCadastro().getTime()));
+					produtorRuralVO.setNomeFantasia(produtorRural.getPessoaJuridica().getNomeFantasia());
+					
+					try {
+						setListaTelefone(getTelefoneDao().getTelefonePorPessoa(produtorRural.getPessoaJuridica().getPessoa()));
+					} catch (Excecoes e) {
+						Mensagem.erro("Não foi possível obter Telefone!!");
+					}
+					
+					List<TelefoneVO> lista = new ArrayList<TelefoneVO>();
+					for(Telefone tel : getListaTelefone()){
+						TelefoneVO telefoneVO = new TelefoneVO();
+						telefoneVO.setContato(tel.getContato());
+						telefoneVO.setDdd(tel.getDdd());
+						telefoneVO.setNumero(tel.getNumero());
+						lista.add(telefoneVO);
+					}
+					produtorRuralVO.setListaTelefone(lista);
+					
+					try {
+						setEndereco(getEnderecoDao().getEnderecoPorPessoa(produtorRural.getPessoaJuridica().getPessoa()));
+					} catch (Excecoes e) {
+						Mensagem.erro("Não foi possível obter Endereço!!");
+					}
+					
+					if(StringUtils.isNotBlank(getEndereco().getCep())){
+						produtorRuralVO.setCep(getEndereco().getCep());
+					}
+					
+					if(StringUtils.isNotBlank(getEndereco().getUf())){
+						produtorRuralVO.setUf(getEndereco().getUf());
+					}
+					
+					if(StringUtils.isNotBlank(getEndereco().getCidade())){
+						produtorRuralVO.setCidade(getEndereco().getCidade());
+					}
+					
+					if(StringUtils.isNotBlank(getEndereco().getLogradouro())){
+						produtorRuralVO.setLogradouro(getEndereco().getLogradouro());
+					}
+					
+					if(StringUtils.isNotBlank(getEndereco().getComplemento())){
+						produtorRuralVO.setComplemento(getEndereco().getComplemento());
+					}
+					
+					if(StringUtils.isNotBlank(getEndereco().getBairro())){
+						produtorRuralVO.setBairro(getEndereco().getBairro());
+					}
+					
+					if(StringUtils.isNotBlank(getEndereco().getNumero())){
+						produtorRuralVO.setNumero(getEndereco().getNumero());
+					}
+					
+					listaVO.add(produtorRuralVO);
+				}
+				
+				String jasper = "";
+				// local do relatorio jasper
+				if(tipoRelatorio.equals("resumido")){
+					jasper = "ireport/relProdutorRuralResumido.jasper";
+				}else{
+					jasper = "ireport/relProdutorRuralCompleto.jasper";
+				}
+	            
+	            // parametros
+	            Map<String, Object> param = new HashMap<>();
+	            param.put("empresa", Constantes.pessoaJuridica.getRazaoSocial());
+	            param.put("cidade", Constantes.endereco.getCidade());
+	            param.put("REPORT_LOCALE", Locale.getDefault());
+	            try {
+	            	if(tipoRelatorio.equals("resumido")){
+	            		File caminhoSubreport = new File("ireport/relProdutorRuralResumidoSubReport.jasper");
+						param.put("SUBREPORT_DIR", caminhoSubreport.getCanonicalPath());
+	            	}else{
+	            		File caminhoSubreport = new File("ireport/relProdutorRuraCompletoSubReport.jasper");
+						param.put("SUBREPORT_DIR", caminhoSubreport.getCanonicalPath());
+	            	}
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+	            
+	            // gerando o relatorio
+				try {
+					JasperPrint print = JasperFillManager.fillReport(jasper, param, new JRBeanCollectionDataSource(listaVO));
+					JasperViewer jv = new JasperViewer(print, false);  
+		            jv.setTitle("Relatório");    
+		            jv.setVisible(true); 
+				} catch (JRException e) {
+					e.printStackTrace();
+					Mensagem.erro("Não foi possível gerar o relatório!!");
+				}
+			}
+		}else{
+			Mensagem.aviso("Carregue a empresa na tela principal!");
+		}
 	}
 	
 	//gets e sets
@@ -466,5 +612,17 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 	
 	public void setEndereco(Endereco endereco) {
 		this.endereco = endereco;
+	}
+	
+	public Telefone getTelefone() {
+		if(telefone == null){
+			telefone = new Telefone();
+			setTelefone(new Telefone());
+		}
+		return telefone;
+	}
+	
+	public void setTelefone(Telefone telefone) {
+		this.telefone = telefone;
 	}
 }

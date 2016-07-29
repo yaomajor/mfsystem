@@ -6,6 +6,7 @@ import javax.persistence.Query;
 
 import br.com.bancodedados.Conexao;
 import br.com.bancodedados.Dao;
+import br.com.entity.Pessoa;
 import br.com.entity.PessoaJuridica;
 import br.com.exception.Excecoes;
 
@@ -26,6 +27,28 @@ public class PessoaJuridicaDao extends Dao<PessoaJuridica>{
 			
 			Query query = em.createQuery(sql.toString());
 			query.setParameter("cnpj", pessoaJuridica.getCnpj());
+			
+			return (PessoaJuridica) query.getSingleResult();
+			
+		} catch (NoResultException e) {
+			return null;
+		} catch(Exception e) {
+			throw new Excecoes(e, "pesquisarErro");
+		} finally {
+			Conexao.fechaConexaoEM(em);
+		}
+	}
+	
+	public PessoaJuridica getPessoaJuridicaPorPessoa(String idPessoa) throws Excecoes {
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT juridica FROM PessoaJuridica juridica ")
+		.append(" WHERE juridica.pessoa.id = (:idPessoa)");
+		
+		EntityManager em = Conexao.getConexaoEM();
+		try {
+			
+			Query query = em.createQuery(sql.toString());
+			query.setParameter("idPessoa", Long.parseLong(idPessoa));
 			
 			return (PessoaJuridica) query.getSingleResult();
 			
