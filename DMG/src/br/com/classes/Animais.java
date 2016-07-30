@@ -1,13 +1,20 @@
 package br.com.classes;
 
+import java.io.InputStream;
 import java.sql.Connection; 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 import br.com.tela.cadastro.Inicio;
 import br.com.util.AN;
 import br.com.util.Conexao;
+import net.sf.jasperreports.engine.JRResultSetDataSource;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 
 public class Animais {
 	public static Connection oConn = null;
@@ -429,4 +436,42 @@ public class Animais {
 			try{stmt.close();}catch(Exception e){}
 		}
 	}
+	public JasperPrint imprimirCopiaCheq(int id, String de, String a) throws Exception{		
+		JasperPrint rel = null;
+		String sql = "select a.*, pj.razao_social, pr.nome_propriedade from animais a "+
+				"left join pessoa_juridica pj on pj.id_pessoa = a.cliente_id "+
+				"left join produtor_rural pr on pr.id = pj.id "+
+				"where pj.id_pessoa="+id;
+			
+			System.out.println("DMG rel "+sql);
+			stmt = oConn.createStatement();
+			rs = stmt.executeQuery(sql);
+			// Manda a nova Query para IReport
+			JRResultSetDataSource jrRS = new JRResultSetDataSource(rs);
+
+			// Map - Para mandar algum parametro ao relatório
+			String arquivoJasper = "analiticoDMG.jasper";
+			Map parameters = new HashMap();
+			
+			parameters.put("de", de);
+			parameters.put("a", a);
+			
+			///
+			InputStream caminhoRelatorio = this.getClass().getClassLoader()
+					.getResourceAsStream("relatorio/" + arquivoJasper);// caminho
+																		// do
+																		// arquivo
+																		// dentro
+																		// dos
+																		// pacotes
+			rel = JasperFillManager.fillReport(caminhoRelatorio, parameters, jrRS);
+			JasperViewer viewer = new JasperViewer(rel, false);
+			viewer.setTitle("Demonstrativo do Gado");
+			viewer.setExtendedState(viewer.MAXIMIZED_BOTH);
+			viewer.setVisible(true);
+	
+		return rel;
+	}
+	
+	
 }

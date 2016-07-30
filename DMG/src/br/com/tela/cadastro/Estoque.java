@@ -167,6 +167,11 @@ public class Estoque extends JInternalFrame {
 		panel.add(btnMudarEra);
 		
 		JButton btnRelatorio = new JButton("Relat\u00F3rio");
+		btnRelatorio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				imprimir();
+			}
+		});
 		btnRelatorio.setIcon(new ImageIcon(Estoque.class.getResource("/image/icRel.png")));
 		btnRelatorio.setBounds(286, 0, 135, 32);
 		panel.add(btnRelatorio);
@@ -611,5 +616,15 @@ public class Estoque extends JInternalFrame {
 	//
 	public static void setBotoes(boolean a){
 		panel.setVisible(a);
+	}
+	public void imprimir(){
+		String dataDe = textDataDe.getText();
+		String dataA = textDataA.getText();
+		String prod = comboBox.getSelectedItem().toString();
+		
+		
+		
+		
+		
 	}
 }
