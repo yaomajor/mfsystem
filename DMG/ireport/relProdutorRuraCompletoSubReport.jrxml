@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relProdutorRuralResumidoSubReport" pageWidth="283" pageHeight="17" whenNoDataType="AllSectionsNoDetail" columnWidth="283" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="1876e2e9-4dd0-4fe7-904a-809a24e3f373">
+	<property name="ireport.zoom" value="2.8531167061100033"/>
+	<property name="ireport.x" value="60"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="XMLAdapter"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<queryString language="SQL">
+		<![CDATA[]]>
+	</queryString>
+	<field name="ddd" class="java.lang.String"/>
+	<field name="numero" class="java.lang.String"/>
+	<field name="contato" class="java.lang.String"/>
+	<detail>
+		<band height="17" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="49" y="1" width="14" height="13" uuid="636a8c47-6143-4089-9652-7a6567b6d010"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["(" + $F{ddd} + ") "]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="####-####">
+				<reportElement x="65" y="1" width="47" height="13" uuid="42e773c2-7c30-4e9e-9306-854ce3a704e1"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="1" width="50" height="13" uuid="68ef98a5-8884-4642-b06d-14bf2e42d2a3"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Telefone :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="115" y="1" width="46" height="13" uuid="4be5939f-234f-4cb7-8881-737c43520646"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Contato :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement x="169" y="1" width="114" height="13" uuid="3a7e97fa-ff8b-4167-94b9-879f8a497bcf"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{contato} != null ? $F{contato} : ""]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

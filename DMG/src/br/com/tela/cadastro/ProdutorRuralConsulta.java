@@ -41,6 +41,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -465,12 +466,17 @@ public class ProdutorRuralConsulta extends JInternalFrame {
 					listaVO.add(produtorRuralVO);
 				}
 				
-				String jasper = "";
+				//String jasper = "";
+				InputStream jasper = null;
 				// local do relatorio jasper
 				if(tipoRelatorio.equals("resumido")){
-					jasper = "ireport/relProdutorRuralResumido.jasper";
+					 jasper = this.getClass().getClassLoader()
+							.getResourceAsStream("relatorio/relProdutorRuralResumido.jasper");
+				//	jasper = "ireport/relProdutorRuralResumido.jasper";
 				}else{
-					jasper = "ireport/relProdutorRuralCompleto.jasper";
+					 jasper = this.getClass().getClassLoader()
+							.getResourceAsStream("relatorio/relProdutorRuralCompleto.jasper");
+					//jasper = "ireport/relProdutorRuralCompleto.jasper";
 				}
 	            
 	            // parametros
